@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cambará Madeireira e Materiais de Construção — há mais de 40 anos em Boa Vista, com madeira de qualidade, materiais para sua obra, entrega rápida e atendimento personalizado.">
+  <title>Cambará Madeireira | Materiais de Construção</title>
+
+  <!-- Ícones -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Barra superior -->
+  <div class="topbar">
+    <div class="container topbar-content">
+      <span><i class="fa-solid fa-location-dot"></i> Boa Vista - RR</span>
+      <span><i class="fa-solid fa-truck-fast"></i> Entrega rápida</span>
+      <span><i class="fa-solid fa-headset"></i> Atendimento personalizado</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="container nav">
+      <a href="#inicio" class="logo" aria-label="Cambará Madeireira - início">
+        <span class="logo-mark"><i class="fa-solid fa-tree"></i></span>
+        <span>
+          <strong>CAMBARÁ</strong>
+          <small>MADEIREIRA & MATERIAIS</small>
+        </span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <nav class="menu" id="menu">
+        <a href="#inicio">Início</a>
+        <a href="#categorias">Categorias</a>
+        <a href="#sobre">Sobre nós</a>
+        <a href="#diferenciais">Diferenciais</a>
+        <a href="#contato">Contato</a>
+      </nav>
+
+      <a class="btn btn-whatsapp nav-cta" href="https://wa.me/5595999999999?text=Olá!%20Gostaria%20de%20fazer%20um%20orçamento." target="_blank" rel="noopener">
+        <i class="fa-brands fa-whatsapp"></i> Orçamento
+      </a>
+    </div>
+  </header>
+
+  <main id="inicio">
+
+    <!-- Banner rotativo -->
+    <section class="hero" aria-label="Destaques">
+      <div class="slides">
+
+        <article class="slide active">
+          <div class="slide-bg" style="background-image: linear-gradient(90deg, rgba(17,12,8,.82), rgba(17,12,8,.30)), url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1800&q=85');"></div>
+          <div class="container hero-content">
+            <span class="eyebrow">Há mais de 40 anos em Boa Vista</span>
+            <h1>Materiais para construir <span>com confiança.</span></h1>
+            <p>Madeiras de excelente qualidade e tudo o que sua obra precisa, do início ao acabamento.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#categorias">Conheça nossos materiais <i class="fa-solid fa-arrow-right"></i></a>
+              <a class="btn btn-outline" href="https://wa.me/5595999999999?text=Olá!%20Quero%20solicitar%20um%20orçamento." target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Fale conosco</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="slide">
+          <div class="slide-bg" style="background-image: linear-gradient(90deg, rgba(17,12,8,.82), rgba(17,12,8,.25)), url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=1800&q=85');"></div>
+          <div class="container hero-content">
+            <span class="eyebrow">Sua obra não pode parar</span>
+            <h1>Entrega <span>rápida</span> para você.</h1>
+            <p>Agilidade e praticidade para seus materiais chegarem quando você precisa.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="https://wa.me/5595999999999?text=Olá!%20Gostaria%20de%20consultar%20uma%20entrega." target="_blank" rel="noopener">Consultar entrega <i class="fa-solid fa-truck-fast"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="slide">
+          <div class="slide-bg" style="background-image: linear-gradient(90deg, rgba(17,12,8,.82), rgba(17,12,8,.25)), url('https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1800&q=85');"></div>
+          <div class="container hero-content">
+            <span class="eyebrow">Do básico ao acabamento</span>
+            <h1>Tudo para sua obra em <span>um só lugar.</span></h1>
+            <p>Hidráulica, elétrica, ferragens, telhados, pisos e muito mais.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#categorias">Ver categorias <i class="fa-solid fa-layer-group"></i></a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <button class="slider-btn prev" id="prevSlide" aria-label="Banner anterior"><i class="fa-solid fa-chevron-left"></i></button>
+      <button class="slider-btn next" id="nextSlide" aria-label="Próximo banner"><i class="fa-solid fa-chevron-right"></i></button>
+
+      <div class="slider-dots" id="sliderDots" aria-label="Selecionar banner">
+        <button class="dot active" data-slide="0" aria-label="Banner 1"></button>
+        <button class="dot" data-slide="1" aria-label="Banner 2"></button>
+        <button class="dot" data-slide="2" aria-label="Banner 3"></button>
+      </div>
+    </section>
+
+    <!-- Faixa de confiança -->
+    <section class="trust-strip">
+      <div class="container trust-grid">
+        <div><i class="fa-solid fa-award"></i><span><strong>+40 anos</strong><small>de experiência</small></span></div>
+        <div><i class="fa-solid fa-tree"></i><span><strong>Madeira de qualidade</strong><small>para sua obra</small></span></div>
+        <div><i class="fa-solid fa-truck-fast"></i><span><strong>Entrega rápida</strong><small>mais praticidade</small></span></div>
+        <div><i class="fa-solid fa-user-check"></i><span><strong>Atendimento personalizado</strong><small>do seu jeito</small></span></div>
+      </div>
+    </section>
+
+    <!-- Categorias -->
+    <section class="section categories" id="categorias">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow dark">Encontre o que precisa</span>
+          <h2>Materiais para <span>cada etapa</span> da sua obra</h2>
+          <p>Conte com a Cambará para encontrar os materiais certos para o seu projeto.</p>
+        </div>
+
+        <div class="category-grid">
+          <a class="category-card" href="#contato" data-category="Hidráulica">
+            <div class="category-icon"><i class="fa-solid fa-faucet-drip"></i></div>
+            <h3>Hidráulica</h3>
+            <p>Tubos, conexões, registros e acessórios.</p>
+            <span>Solicitar orçamento <i class="fa-solid fa-arrow-right"></i></span>
+          </a>
+
+          <a class="category-card" href="#contato" data-category="Elétrica">
+            <div class="category-icon"><i class="fa-solid fa-bolt"></i></div>
+            <h3>Elétrica</h3>
+            <p>Materiais e acessórios para instalações.</p>
+            <span>Solicitar orçamento <i class="fa-solid fa-arrow-right"></i></span>
+          </a>
+
+          <a class="category-card" href="#contato" data-category="Ferragens">
+            <div class="category-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+            <h3>Ferragens</h3>
+            <p>Ferramentas, fixadores e itens para construção.</p>
+            <span>Solicitar orçamento <i class="fa-solid fa-arrow-right"></i></span>
+          </a>
+
+          <a class="category-card" href="#contato" data-category="Telhados">
+            <div class="category-icon"><i class="fa-solid fa-house"></i></div>
+            <h3>Telhados</h3>
+            <p>Materiais para cobertura e proteção da obra.</p>
+            <span>Solicitar orçamento <i class="fa-solid fa-arrow-right"></i></span>
+          </a>
+
+          <a class="category-card" href="#contato" data-category="Pisos">
+            <div class="category-icon"><i class="fa-solid fa-border-all"></i></div>
+            <h3>Pisos</h3>
+            <p>Opções para deixar seus ambientes completos.</p>
+            <span>Solicitar orçamento <i class="fa-solid fa-arrow-right"></i></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sobre -->
+    <section class="section about" id="sobre">
+      <div class="container about-grid">
+        <div class="about-image">
+          <div class="experience-badge">
+            <strong>40+</strong>
+            <span>anos de<br>história</span>
+          </div>
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1000&q=85" alt="Madeira utilizada em projetos de construção" loading="lazy">
+        </div>
+
+        <div class="about-content">
+          <span class="eyebrow dark">Sobre a Cambará</span>
+          <h2>Experiência que ajuda a construir <span>seus projetos.</span></h2>
+          <p>A Cambará Madeireira e Materiais de Construção atua há mais de 40 anos em Boa Vista, com madeiras de excelente qualidade para atender qualquer necessidade da obra.</p>
+          <p>Nosso compromisso é oferecer produtos confiáveis, agilidade na entrega e um atendimento próximo para ajudar você a encontrar o que realmente precisa.</p>
+
+          <div class="check-list">
+            <div><i class="fa-solid fa-circle-check"></i><span>Madeiras de excelente qualidade</span></div>
+            <div><i class="fa-solid fa-circle-check"></i><span>Grande variedade de materiais</span></div>
+            <div><i class="fa-solid fa-circle-check"></i><span>Entrega rápida</span></div>
+            <div><i class="fa-solid fa-circle-check"></i><span>Atendimento personalizado</span></div>
+          </div>
+
+          <a class="btn btn-primary" href="https://wa.me/5595999999999?text=Olá!%20Gostaria%20de%20conhecer%20os%20materiais%20da%20Cambará." target="_blank" rel="noopener">Falar com a Cambará <i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Diferenciais -->
+    <section class="section features" id="diferenciais">
+      <div class="container">
+        <div class="section-heading light">
+          <span class="eyebrow">Por que escolher a Cambará?</span>
+          <h2>Mais que materiais. <span>Parceria para sua obra.</span></h2>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature">
+            <i class="fa-solid fa-truck-fast"></i>
+            <h3>Entrega rápida</h3>
+            <p>Mais agilidade para você manter sua obra no ritmo certo.</p>
+          </article>
+          <article class="feature">
+            <i class="fa-solid fa-user-tie"></i>
+            <h3>Atendimento personalizado</h3>
+            <p>Uma equipe pronta para entender sua necessidade e ajudar na escolha.</p>
+          </article>
+          <article class="feature">
+            <i class="fa-solid fa-medal"></i>
+            <h3>Mais de 40 anos</h3>
+            <p>Experiência e tradição em Boa Vista para atender sua obra.</p>
+          </article>
+          <article class="feature">
+            <i class="fa-solid fa-shield-heart"></i>
+            <h3>Qualidade</h3>
+            <p>Materiais selecionados para oferecer segurança e confiança.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="contato">
+      <div class="container cta-inner">
+        <div>
+          <span class="eyebrow dark">Vamos começar?</span>
+          <h2>Precisa de materiais para sua obra?</h2>
+          <p>Chame a Cambará no WhatsApp e peça seu orçamento.</p>
+        </div>
+        <a class="btn btn-whatsapp btn-large" href="https://wa.me/5595999999999?text=Olá!%20Vim%20pelo%20site%20da%20Cambará%20e%20quero%20fazer%20um%20orçamento." target="_blank" rel="noopener">
+          <i class="fa-brands fa-whatsapp"></i> Pedir orçamento
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="#inicio" class="logo logo-footer">
+          <span class="logo-mark"><i class="fa-solid fa-tree"></i></span>
+          <span><strong>CAMBARÁ</strong><small>MADEIREIRA & MATERIAIS</small></span>
+        </a>
+        <p>Há mais de 40 anos ajudando a construir Boa Vista.</p>
+      </div>
+
+      <div>
+        <h4>Navegação</h4>
+        <a href="#inicio">Início</a>
+        <a href="#categorias">Categorias</a>
+        <a href="#sobre">Sobre nós</a>
+        <a href="#contato">Contato</a>
+      </div>
+
+      <div>
+        <h4>Categorias</h4>
+        <a href="#categorias">Hidráulica</a>
+        <a href="#categorias">Elétrica</a>
+        <a href="#categorias">Ferragens</a>
+        <a href="#categorias">Telhados</a>
+        <a href="#categorias">Pisos</a>
+      </div>
+
+      <div>
+        <h4>Fale conosco</h4>
+        <p><i class="fa-solid fa-location-dot"></i> Boa Vista - RR</p>
+        <a href="https://wa.me/5595999999999" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+
+        <div class="socials" aria-label="Redes sociais">
+          <a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+          <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://www.facebook.com/" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <span>© <span id="year"></span> Cambará Madeireira e Materiais de Construção. Todos os direitos reservados.</span>
+      <span>Boa Vista - Roraima</span>
+    </div>
+  </footer>
+
+  <!-- Botão flutuante WhatsApp -->
+  <a class="floating-whatsapp" href="https://wa.me/5595999999999?text=Olá!%20Gostaria%20de%20fazer%20um%20orçamento." target="_blank" rel="noopener" aria-label="Falar pelo WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+    <span>Fale no WhatsApp</span>
+  </a>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
