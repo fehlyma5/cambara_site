@@ -285,6 +285,87 @@
     const {error}=await client.from("site_settings").upsert(payload,{onConflict:"id"});
     setMessage("settingsMessage",error ? "Erro ao salvar: "+error.message : "Configurações salvas com sucesso.");
   }
+
+  let currentGalleryImageUrl = "";
+  function resetGalleryForm() {
+    $("galleryForm").reset();
+    $("galleryId").value="";
+    $("galleryPosition").value="1";
+    $("galleryActive").checked=true;
+    $("galleryImage").value="";
+    $("galleryImagePreview").innerHTML="";
+    currentGalleryImageUrl="";
+    $("galleryFormTitle").textContent="Adicionar foto";
+    $("galleryFormPanel").hidden=true;
+    setMessage("galleryFormMessage","");
+  }
+  async function loadGallery() {
+    $("galleryList").innerHTML='<p class="muted">Carregando...</p>';
+    const {data,error}=await client.from("gallery_photos").select("*").order("position",{ascending:true});
+    if(error) { $("galleryList").innerHTML=""; return setMessage("dashboardMessage","Erro ao carregar galeria: "+error.message); }
+    if(!data.length) { $("galleryList").innerHTML='<p class="muted">Nenhuma foto cadastrada.</p>'; return; }
+    $("galleryList").innerHTML=data.map(item=>`
+      <article class="banner-item">
+        <img src="${escapeHtml(item.image_url)}" alt="">
+        <div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.caption || "")}</p><span class="status ${item.active ? "" : "off"}">${item.active ? "Publicada" : "Oculta"}</span><p>Posição: ${item.position}</p></div>
+        <div class="item-actions"><button class="secondary" data-gallery-edit="${item.id}">Editar</button><button class="secondary" data-gallery-toggle="${item.id}" data-active="${item.active}">${item.active ? "Ocultar" : "Publicar"}</button><button class="secondary" data-gallery-delete="${item.id}">Excluir</button></div>
+      </article>`).join("");
+  }
+  async function editGalleryPhoto(id) {
+    const {data,error}=await client.from("gallery_photos").select("*").eq("id",id).single();
+    if(error) return setMessage("dashboardMessage",error.message);
+    $("galleryId").value=data.id;
+    $("galleryTitle").value=data.title || "";
+    $("galleryCaption").value=data.caption || "";
+    $("galleryPosition").value=data.position || 1;
+    $("galleryActive").checked=!!data.active;
+    currentGalleryImageUrl=data.image_url || "";
+    $("galleryImagePreview").innerHTML=currentGalleryImageUrl ? `<img src="${escapeHtml(currentGalleryImageUrl)}" alt="Imagem atual">` : "";
+    $("galleryFormTitle").textContent="Editar foto";
+    $("galleryFormPanel").hidden=false;
+    $("galleryFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  async function saveGalleryPhoto(event) {
+    event.preventDefault();
+    setMessage("galleryFormMessage","Salvando foto...");
+    try {
+      const file=$("galleryImage").files[0];
+      let imageUrl=currentGalleryImageUrl;
+      if(file) {
+        if(!["image/jpeg","image/png","image/webp"].includes(file.type)) throw new Error("Use uma imagem JPG, PNG ou WebP.");
+        if(file.size>2*1024*1024) throw new Error("A imagem deve ter até 2 MB. Comprima o arquivo antes de enviar.");
+        const ext=file.name.split(".").pop().toLowerCase();
+        const path="gallery/"+crypto.randomUUID()+"."+ext;
+        const {error:uploadError}=await client.storage.from("site-images").upload(path,file,{upsert:false,contentType:file.type});
+        if(uploadError) throw uploadError;
+        imageUrl=client.storage.from("site-images").getPublicUrl(path).data.publicUrl;
+      }
+      if(!imageUrl) throw new Error("Selecione uma imagem.");
+      const payload={title:$("galleryTitle").value.trim(),caption:$("galleryCaption").value.trim() || null,image_url:imageUrl,position:Number($("galleryPosition").value),active:$("galleryActive").checked,updated_at:new Date().toISOString()};
+      const id=$("galleryId").value;
+      const query=id ? client.from("gallery_photos").update(payload).eq("id",id) : client.from("gallery_photos").insert(payload);
+      const {error}=await query;
+      if(error) throw error;
+      resetGalleryForm();
+      setMessage("dashboardMessage","Foto salva com sucesso.");
+      await loadGallery();
+    } catch(error) { setMessage("galleryFormMessage",error.message || "Erro ao salvar foto."); }
+  }
+  async function handleGalleryClick(event) {
+    const editId=event.target.dataset.galleryEdit;
+    const toggleId=event.target.dataset.galleryToggle;
+    const deleteId=event.target.dataset.galleryDelete;
+    if(editId) return editGalleryPhoto(editId);
+    if(toggleId) {
+      const active=event.target.dataset.active==="true";
+      const {error}=await client.from("gallery_photos").update({active:!active,updated_at:new Date().toISOString()}).eq("id",toggleId);
+      if(error) setMessage("dashboardMessage",error.message); else await loadGallery();
+    }
+    if(deleteId && confirm("Excluir esta foto da galeria?")) {
+      const {error}=await client.from("gallery_photos").delete().eq("id",deleteId);
+      if(error) setMessage("dashboardMessage",error.message); else {setMessage("dashboardMessage","Foto excluída.");await loadGallery();}
+    }
+  }
   async function init() {
     if (!hasConfig()) {
       setMessage("loginMessage", "Configure a URL e a chave pública do Supabase no arquivo admin/config.js para ativar o painel.");
@@ -297,8 +378,13 @@
     }
     client = window.supabase.createClient(window.CAMBARA_SUPABASE_URL, window.CAMBARA_SUPABASE_ANON_KEY);
     const { data } = await client.auth.getSession();
-    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); }
+    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadGallery(); }
   }
+  $("galleryForm").addEventListener("submit",saveGalleryPhoto);
+  $("newPhotoButton").addEventListener("click",()=>{resetGalleryForm();$("galleryFormPanel").hidden=false;});
+  $("cancelGalleryButton").addEventListener("click",resetGalleryForm);
+  $("galleryList").addEventListener("click",handleGalleryClick);
+  $("galleryImage").addEventListener("change",event=>{const file=event.target.files[0];if(file)$("galleryImagePreview").innerHTML=`<img src="${URL.createObjectURL(file)}" alt="Prévia da imagem">`;});
   $("settingsForm").addEventListener("submit", saveSettings);
   $("newCategoryButton").addEventListener("click", () => { resetCategoryForm(); $("categoryFormPanel").hidden=false; });
   $("cancelCategoryButton").addEventListener("click", resetCategoryForm);
