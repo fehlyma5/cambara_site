@@ -66,6 +66,31 @@
         <div class="panel-heading"><div><h2>Banners e campanhas</h2><p class="muted">Banners ativos dentro do período agendado são exibidos no site.</p></div><button id="refreshButton" class="secondary">Atualizar</button></div>
         <div id="bannerList" class="banner-list"><p class="muted">Carregando...</p></div>
       </section>
+
+      <section class="panel" id="categoriesPanel">
+        <div class="panel-heading">
+          <div><h2>Gerenciar categorias</h2><p class="muted">Adicione, edite, ordene ou oculte categorias do site.</p></div>
+          <button id="newCategoryButton" class="primary" type="button">+ Nova categoria</button>
+        </div>
+        <section id="categoryFormPanel" hidden>
+          <h3 id="categoryFormTitle">Nova categoria</h3>
+          <form id="categoryForm">
+            <input id="categoryId" type="hidden">
+            <div class="form-grid">
+              <div class="field"><label for="categoryName">Nome</label><input id="categoryName" maxlength="80" required placeholder="Ex.: Jardinagem"></div>
+              <div class="field"><label for="categorySlug">Identificador (slug)</label><input id="categorySlug" maxlength="90" required placeholder="ex.: jardinagem"></div>
+              <div class="field full"><label for="categoryDescription">Descrição</label><textarea id="categoryDescription" rows="2" maxlength="220"></textarea></div>
+              <div class="field"><label for="categoryIcon">Ícone Font Awesome (opcional)</label><input id="categoryIcon" placeholder="fa-solid fa-leaf"></div>
+              <div class="field"><label for="categoryPosition">Posição</label><input id="categoryPosition" type="number" min="1" value="6" required></div>
+              <div class="field full"><label for="categoryImage">Imagem (opcional)</label><input id="categoryImage" type="file" accept="image/jpeg,image/png,image/webp"><div id="categoryImagePreview" class="preview"></div></div>
+              <label class="switch-field"><input id="categoryActive" type="checkbox" checked> Categoria visível no site</label>
+            </div>
+            <div class="actions"><button class="primary" type="submit">Salvar categoria</button><button class="secondary" id="cancelCategoryButton" type="button">Cancelar</button></div>
+            <p id="categoryFormMessage" class="message" role="status"></p>
+          </form>
+        </section>
+        <div id="categoryList" class="banner-list"><p class="muted">Carregando categorias...</p></div>
+      </section>
       <p id="dashboardMessage" class="message" role="status"></p>
     </section>
   </main>
