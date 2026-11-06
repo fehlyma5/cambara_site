@@ -20,6 +20,7 @@
     $("startsAt").value = "";
     $("endsAt").value = "";
     $("active").checked = true;
+    $("displayText").checked = true;
     $("imageFile").value = "";
     $("imagePreview").innerHTML = "";
     currentImageUrl = "";
@@ -69,10 +70,16 @@
     $("buttonUrl").value = data.button_url || "";
     $("position").value = data.position || 1;
     $("campaignLabel").value = data.campaign_label || "";
-    const toLocalInput = value => value ? new Date(value).toISOString().slice(0,16) : "";
+    const toLocalInput = value => {
+      if (!value) return "";
+      const date = new Date(value);
+      const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0,16);
+    };
     $("startsAt").value = toLocalInput(data.starts_at);
     $("endsAt").value = toLocalInput(data.ends_at);
     $("active").checked = !!data.active;
+    $("displayText").checked = data.display_text !== false;
     currentImageUrl = data.image_url || "";
     $("imagePreview").innerHTML = currentImageUrl ? `<img src="${escapeHtml(currentImageUrl)}" alt="Imagem atual do banner">` : "";
     $("formTitle").textContent = "Editar banner";
@@ -93,6 +100,7 @@
         throw new Error("A data de término precisa ser posterior à data de início.");
       }
       const payload = {
+        display_text: $("displayText").checked,
         campaign_label: $("campaignLabel").value.trim() || null,
         starts_at: startValue ? new Date(startValue).toISOString() : null,
         ends_at: endValue ? new Date(endValue).toISOString() : null,
