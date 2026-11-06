@@ -10,12 +10,12 @@
   const recordedImpressions = new Set();
   const pendingTimers = new Map();
 
-  async function record(type, slide = null) {
+  async function record(type, slide = null, labelOverride = null) {
     if (!client) return;
     const payload = {
       event_type: type,
       banner_id: slide?.dataset?.bannerId || null,
-      campaign_label: slide?.dataset?.campaignLabel || null,
+      campaign_label: labelOverride || slide?.dataset?.campaignLabel || null,
       page_path: window.location.pathname
     };
     try {
@@ -37,13 +37,19 @@
   };
 
   document.addEventListener("click", (event) => {
+    const category = event.target.closest(".category-card");
+    if (category) {
+      record("whatsapp_click", null, "Categoria: " + (category.dataset.category || "não identificada"));
+      return;
+    }
+
     const link = event.target.closest("a");
     if (!link) return;
     let destination;
     try { destination = new URL(link.href, window.location.href); } catch { return; }
     const isWhatsapp = destination.hostname === "wa.me" || destination.hostname.endsWith(".whatsapp.com");
     if (isWhatsapp) {
-      record("whatsapp_click", link.closest(".slide"));
+      record("whatsapp_click", link.closest(".slide"), link.closest(".slide") ? null : "WhatsApp do site");
       return;
     }
     const slide = link.closest(".slide");
