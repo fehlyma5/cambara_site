@@ -366,6 +366,41 @@
       if(error) setMessage("dashboardMessage",error.message); else {setMessage("dashboardMessage","Foto excluída.");await loadGallery();}
     }
   }
+
+  async function loadTeam() {
+    $("teamList").innerHTML='<p class="muted">Carregando equipe...</p>';
+    const {data:me,error:meError}=await client.from("profiles").select("role").eq("id",(await client.auth.getUser()).data.user.id).single();
+    if(meError || me?.role!=="admin") {
+      $("teamList").innerHTML='<p class="muted">Apenas administradores podem consultar e gerenciar a equipe.</p>';
+      return;
+    }
+    const {data,error}=await client.from("profiles").select("id,email,role,created_at").order("created_at",{ascending:true});
+    if(error) { $("teamList").innerHTML=""; return setMessage("teamMessage","Erro ao carregar equipe: "+error.message); }
+    $("teamList").innerHTML=data.map(user=>`
+      <article class="banner-item">
+        <div class="team-avatar"><i class="fa-solid fa-user"></i></div>
+        <div><h3>${escapeHtml(user.email || "E-mail não disponível")}</h3><span class="status ${user.role==="admin" ? "" : "off"}">${user.role==="admin" ? "Administrador" : "Editor"}</span></div>
+        <div class="item-actions">
+          <select aria-label="Perfil de ${escapeHtml(user.email || "usuário")}" data-team-role="${user.id}">
+            <option value="editor" ${user.role==="editor"?"selected":""}>Editor</option>
+            <option value="admin" ${user.role==="admin"?"selected":""}>Administrador</option>
+          </select>
+          <button class="secondary" type="button" data-team-save="${user.id}">Salvar perfil</button>
+        </div>
+      </article>`).join("");
+  }
+  async function handleTeamClick(event) {
+    const id=event.target.dataset.teamSave;
+    if(!id) return;
+    const select=$("teamList").querySelector('[data-team-role="'+id+'"]');
+    if(!select) return;
+    if(id===(await client.auth.getUser()).data.user.id && select.value!=="admin") {
+      return setMessage("teamMessage","Não é permitido remover seu próprio acesso de administrador.");
+    }
+    const {error}=await client.from("profiles").update({role:select.value}).eq("id",id);
+    if(error) setMessage("teamMessage","Não foi possível alterar o perfil: "+error.message);
+    else {setMessage("teamMessage","Perfil atualizado com sucesso.");await loadTeam();}
+  }
   async function init() {
     if (!hasConfig()) {
       setMessage("loginMessage", "Configure a URL e a chave pública do Supabase no arquivo admin/config.js para ativar o painel.");
@@ -378,8 +413,10 @@
     }
     client = window.supabase.createClient(window.CAMBARA_SUPABASE_URL, window.CAMBARA_SUPABASE_ANON_KEY);
     const { data } = await client.auth.getSession();
-    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadGallery(); }
+    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); }
   }
+  $("refreshTeamButton").addEventListener("click",loadTeam);
+  $("teamList").addEventListener("click",handleTeamClick);
   $("galleryForm").addEventListener("submit",saveGalleryPhoto);
   $("newPhotoButton").addEventListener("click",()=>{resetGalleryForm();$("galleryFormPanel").hidden=false;});
   $("cancelGalleryButton").addEventListener("click",resetGalleryForm);
@@ -403,7 +440,7 @@
     setMessage("loginMessage", "Entrando...");
     const { error } = await client.auth.signInWithPassword({ email: $("email").value, password: $("password").value });
     if (error) return setMessage("loginMessage", error.message);
-    showDashboard(true); setMessage("loginMessage", ""); await loadBanners(); await loadCategories(); await loadSettings();
+    showDashboard(true); setMessage("loginMessage", ""); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam();
   });
   $("logoutButton").addEventListener("click", async () => { await client.auth.signOut(); showDashboard(false); });
   $("newBannerButton").addEventListener("click", () => { resetForm(); $("bannerFormPanel").hidden = false; });
