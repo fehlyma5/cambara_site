@@ -38,10 +38,14 @@ window.CAMBARA_CATEGORIES_READY = (async () => {
     });
     track.append(fragment);
     // Duplica os cards para criar um loop visual contínuo sem interromper a navegação por toque.
-    const clone=track.cloneNode(true);
-    clone.setAttribute("aria-hidden","true");
-    clone.querySelectorAll("a,button,[tabindex]").forEach(el=>el.setAttribute("tabindex","-1"));
-    grid.replaceChildren(track,clone);
+    const cloneCards=Array.from(track.children).map(card=>{
+      const clone=card.cloneNode(true);
+      clone.setAttribute("aria-hidden","true");
+      clone.querySelectorAll("a,button,[tabindex]").forEach(el=>el.setAttribute("tabindex","-1"));
+      return clone;
+    });
+    cloneCards.forEach(card=>track.append(card));
+    grid.replaceChildren(track);
     grid.classList.add("category-marquee");
     grid.addEventListener("mouseenter",()=>grid.classList.add("is-paused"));
     grid.addEventListener("mouseleave",()=>grid.classList.remove("is-paused"));
