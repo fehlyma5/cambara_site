@@ -426,6 +426,45 @@
     }
     $("statsUpdated").textContent="Atualizado em "+new Date().toLocaleString("pt-BR");
   }
+
+  async function loadCampaignReport() {
+    const {data:userData}=await client.auth.getUser();
+    const {data:profile}=await client.from("profiles").select("role").eq("id",userData.user.id).maybeSingle();
+    if(profile?.role!=="admin") {
+      $("campaignReportsPanel").hidden=true;
+      return;
+    }
+    $("campaignReportsPanel").hidden=false;
+    $("campaignReportRows").innerHTML='<tr><td colspan="4">Carregando relatório...</td></tr>';
+    const days=Number($("reportPeriod").value || 7);
+    const since=new Date();
+    if(days===1) since.setHours(0,0,0,0);
+    else since.setDate(since.getDate()-days);
+    const {data,error}=await client.from("campaign_events")
+      .select("banner_id,campaign_label,event_type,created_at")
+      .gte("created_at",since.toISOString())
+      .order("created_at",{ascending:false})
+      .limit(10000);
+    if(error) {
+      $("campaignReportRows").innerHTML='<tr><td colspan="4">Não foi possível carregar os dados.</td></tr>';
+      return setMessage("reportMessage","Relatório indisponível: "+error.message);
+    }
+    const totals={impression:0,banner_click:0,whatsapp_click:0};
+    const groups=new Map();
+    (data || []).forEach(event=>{
+      totals[event.event_type]=(totals[event.event_type] || 0)+1;
+      const key=event.banner_id || event.campaign_label || "sem-campanha";
+      if(!groups.has(key)) groups.set(key,{name:event.campaign_label || "Campanha sem identificação",impression:0,banner_click:0,whatsapp_click:0});
+      const group=groups.get(key);
+      group[event.event_type]=(group[event.event_type] || 0)+1;
+    });
+    $("reportImpressions").textContent=String(totals.impression);
+    $("reportBannerClicks").textContent=String(totals.banner_click);
+    $("reportWhatsappClicks").textContent=String(totals.whatsapp_click);
+    const rows=Array.from(groups.values()).sort((a,b)=>(b.impression+b.banner_click+b.whatsapp_click)-(a.impression+a.banner_click+a.whatsapp_click));
+    $("campaignReportRows").innerHTML=rows.length ? rows.map(item=>`<tr><td>${escapeHtml(item.name)}</td><td>${item.impression}</td><td>${item.banner_click}</td><td>${item.whatsapp_click}</td></tr>`).join("") : '<tr><td colspan="4">Ainda não há eventos neste período. Os dados começam a ser registrados após a publicação desta atualização.</td></tr>';
+    setMessage("reportMessage","Período consultado: "+since.toLocaleString("pt-BR")+" em diante. Dados aproximados, sem identificação individual.");
+  }
   async function init() {
     if (!hasConfig()) {
       setMessage("loginMessage", "Configure a URL e a chave pública do Supabase no arquivo admin/config.js para ativar o painel.");
@@ -438,8 +477,9 @@
     }
     client = window.supabase.createClient(window.CAMBARA_SUPABASE_URL, window.CAMBARA_SUPABASE_ANON_KEY);
     const { data } = await client.auth.getSession();
-    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats(); }
+    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats(); await loadCampaignReport(); await loadCampaignReport(); }
   }
+  $("reportPeriod").addEventListener("change",loadCampaignReport);
   $("refreshTeamButton").addEventListener("click",loadTeam);
   $("teamList").addEventListener("click",handleTeamClick);
   $("galleryForm").addEventListener("submit",saveGalleryPhoto);
