@@ -4,7 +4,7 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
   // Aguarda a tentativa de carregar os banners do CMS antes de inicializar o slider.
-  await (window.CAMBARA_BANNERS_READY || Promise.resolve());
+  await Promise.all([window.CAMBARA_BANNERS_READY || Promise.resolve(), window.CAMBARA_SETTINGS_READY || Promise.resolve()]);
   // Ano automático no rodapé
   const year = document.getElementById("year");
   if (year) year.textContent = new Date().getFullYear();
@@ -113,16 +113,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.CAMBARA_TRACK_IMPRESSION(slides[current]);
   }
 
-  // Categorias: preenche uma mensagem de WhatsApp específica
-  const whatsappBase = "https://wa.me/5595999999999?text=";
-
-  document.querySelectorAll(".category-card").forEach(card => {
-    card.addEventListener("click", () => {
-      const category = card.dataset.category;
-      const message = `Olá! Gostaria de fazer um orçamento de materiais de ${category} na Cambará.`;
-      card.href = whatsappBase + encodeURIComponent(message);
-      card.target = "_blank";
-      card.rel = "noopener";
-    });
+  // Categorias: usa o número configurado no CMS e suporta cards carregados dinamicamente.
+  document.addEventListener("click", event => {
+    const card = event.target.closest(".category-card");
+    if (!card) return;
+    const phone = window.CAMBARA_WHATSAPP_PHONE;
+    if (!phone) {
+      console.warn("Cambará: número do WhatsApp ainda não foi carregado do CMS.");
+      return;
+    }
+    event.preventDefault();
+    const category = card.dataset.category || "materiais";
+    const message = "Olá! Gostaria de fazer um orçamento de materiais de " + category + " na Cambará.";
+    window.open(window.CAMBARA_WHATSAPP_URL(message), "_blank", "noopener");
   });
 });
