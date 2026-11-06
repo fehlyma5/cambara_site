@@ -810,7 +810,7 @@ button { font: inherit; }
 }
 @keyframes cambara-category-scroll {
   from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
+  to { transform: translateX(-50%); }
 }
 @media (max-width: 760px) {
   .category-track { gap: 12px; padding-right: 12px; animation-duration: 28s; }
