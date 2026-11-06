@@ -33,6 +33,15 @@
         <div><p class="eyebrow">CAMBARÁ MADEIREIRA</p><h1>Gerenciar banners</h1></div>
         <button id="logoutButton" class="secondary">Sair</button>
       </header>
+
+      <section class="stats-grid" id="statsGrid" aria-label="Resumo do CMS">
+        <article class="stat-card"><span>Banners cadastrados</span><strong id="statBanners">—</strong></article>
+        <article class="stat-card"><span>Campanhas em exibição</span><strong id="statCampaigns">—</strong></article>
+        <article class="stat-card"><span>Categorias visíveis</span><strong id="statCategories">—</strong></article>
+        <article class="stat-card"><span>Fotos publicadas</span><strong id="statGallery">—</strong></article>
+        <article class="stat-card" id="statTeamCard" hidden><span>Usuários da equipe</span><strong id="statTeam">—</strong></article>
+        <p id="statsUpdated" class="muted stats-updated">Resumo carregado ao entrar no painel.</p>
+      </section>
       <div class="intro">
         <p>Cadastre os destaques que aparecem no banner principal do site. Arraste a ordem usando os campos de posição.</p>
         <button id="newBannerButton" class="primary">+ Novo banner</button>
