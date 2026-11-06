@@ -47,8 +47,6 @@ window.CAMBARA_CATEGORIES_READY = (async () => {
     cloneCards.forEach(card=>track.append(card));
     grid.replaceChildren(track);
     grid.classList.add("category-marquee");
-    grid.addEventListener("mouseenter",()=>grid.classList.add("is-paused"));
-    grid.addEventListener("mouseleave",()=>grid.classList.remove("is-paused"));
     grid.addEventListener("focusin",()=>grid.classList.add("is-paused"));
     grid.addEventListener("focusout",event=>{if(!grid.contains(event.relatedTarget))grid.classList.remove("is-paused");});
   } catch(error) { console.warn("Cambará CMS: mantendo categorias locais.",error); }
