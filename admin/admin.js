@@ -16,6 +16,9 @@
     $("bannerForm").reset();
     $("bannerId").value = "";
     $("position").value = "1";
+    $("campaignLabel").value = "";
+    $("startsAt").value = "";
+    $("endsAt").value = "";
     $("active").checked = true;
     $("imageFile").value = "";
     $("imagePreview").innerHTML = "";
@@ -47,7 +50,7 @@
     $("bannerList").innerHTML = data.map(item => `
       <article class="banner-item">
         <img src="${escapeHtml(item.image_url)}" alt="">
-        <div><h3>${escapeHtml(item.title)}</h3><p>Posição: ${item.position} · ${escapeHtml(item.eyebrow || "")}</p><span class="status ${item.active ? "" : "off"}">${item.active ? "Ativo" : "Inativo"}</span></div>
+        <div><h3>${escapeHtml(item.title)}</h3><p>Posição: ${item.position} · ${escapeHtml(item.campaign_label || item.eyebrow || "Sem campanha")}</p><span class="status ${item.active ? "" : "off"}">${item.active ? "Ativo" : "Inativo"}</span><p>Período: ${item.starts_at ? new Date(item.starts_at).toLocaleString("pt-BR") : "Sem início"} até ${item.ends_at ? new Date(item.ends_at).toLocaleString("pt-BR") : "Sem término"}</p></div>
         <div class="item-actions">
           <button class="secondary" data-edit="${item.id}">Editar</button>
           <button class="secondary" data-toggle="${item.id}" data-active="${item.active}">${item.active ? "Desativar" : "Ativar"}</button>
@@ -65,6 +68,10 @@
     $("buttonText").value = data.button_text || "";
     $("buttonUrl").value = data.button_url || "";
     $("position").value = data.position || 1;
+    $("campaignLabel").value = data.campaign_label || "";
+    const toLocalInput = value => value ? new Date(value).toISOString().slice(0,16) : "";
+    $("startsAt").value = toLocalInput(data.starts_at);
+    $("endsAt").value = toLocalInput(data.ends_at);
     $("active").checked = !!data.active;
     currentImageUrl = data.image_url || "";
     $("imagePreview").innerHTML = currentImageUrl ? `<img src="${escapeHtml(currentImageUrl)}" alt="Imagem atual do banner">` : "";
@@ -80,7 +87,15 @@
       let imageUrl = currentImageUrl;
       if (file) imageUrl = await uploadImage(file);
       if (!imageUrl) throw new Error("Selecione uma imagem para o banner.");
+      const startValue = $("startsAt").value;
+      const endValue = $("endsAt").value;
+      if (startValue && endValue && new Date(endValue) <= new Date(startValue)) {
+        throw new Error("A data de término precisa ser posterior à data de início.");
+      }
       const payload = {
+        campaign_label: $("campaignLabel").value.trim() || null,
+        starts_at: startValue ? new Date(startValue).toISOString() : null,
+        ends_at: endValue ? new Date(endValue).toISOString() : null,
         title: $("title").value.trim(),
         subtitle: $("subtitle").value.trim(),
         eyebrow: $("eyebrow").value.trim(),
