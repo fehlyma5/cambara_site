@@ -9,8 +9,10 @@ window.CAMBARA_BANNERS_READY = (async () => {
     );
     const { data, error } = await client
       .from("banners")
-      .select("title, subtitle, eyebrow, button_text, button_url, image_url, position")
+      .select("title, subtitle, eyebrow, button_text, button_url, image_url, position, campaign_label, starts_at, ends_at, display_text")
       .eq("active", true)
+      .or("starts_at.is.null,starts_at.lte." + new Date().toISOString())
+      .or("ends_at.is.null,ends_at.gte." + new Date().toISOString())
       .order("position", { ascending: true });
 
     if (error || !data?.length) {
@@ -47,25 +49,30 @@ window.CAMBARA_BANNERS_READY = (async () => {
 
       const content = document.createElement("div");
       content.className = "container hero-content";
+      if (banner.display_text === false) {
+        content.hidden = true;
+      }
 
-      if (banner.eyebrow) {
+      if (banner.display_text !== false && banner.eyebrow) {
         const eyebrow = document.createElement("span");
         eyebrow.className = "eyebrow";
         eyebrow.textContent = escapeText(banner.eyebrow);
         content.append(eyebrow);
       }
 
-      const title = document.createElement("h1");
-      title.textContent = escapeText(banner.title);
-      content.append(title);
+      if (banner.display_text !== false) {
+        const title = document.createElement("h1");
+        title.textContent = escapeText(banner.title);
+        content.append(title);
+      }
 
-      if (banner.subtitle) {
+      if (banner.display_text !== false && banner.subtitle) {
         const subtitle = document.createElement("p");
         subtitle.textContent = escapeText(banner.subtitle);
         content.append(subtitle);
       }
 
-      if (banner.button_text && banner.button_url) {
+      if (banner.display_text !== false && banner.button_text && banner.button_url) {
         try {
           const url = new URL(banner.button_url);
           if (["https:", "http:"].includes(url.protocol)) {
