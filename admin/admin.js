@@ -477,7 +477,7 @@
     }
     client = window.supabase.createClient(window.CAMBARA_SUPABASE_URL, window.CAMBARA_SUPABASE_ANON_KEY);
     const { data } = await client.auth.getSession();
-    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats(); await loadCampaignReport(); await loadCampaignReport(); }
+    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats(); await loadCampaignReport(); }
   }
   $("reportPeriod").addEventListener("change",loadCampaignReport);
   $("refreshTeamButton").addEventListener("click",loadTeam);
