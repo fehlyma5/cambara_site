@@ -732,3 +732,13 @@ button { font: inherit; }
 
   .floating-whatsapp span { display: none; }
 }
+
+
+/* Imagens das categorias gerenciadas pelo CMS */
+.category-photo {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
