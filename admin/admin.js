@@ -142,6 +142,111 @@
       else { setMessage("dashboardMessage", "Banner excluído."); await loadBanners(); }
     }
   }
+
+  let currentCategoryImageUrl = "";
+  function resetCategoryForm() {
+    $("categoryForm").reset();
+    $("categoryId").value = "";
+    $("categoryPosition").value = "6";
+    $("categoryActive").checked = true;
+    $("categoryImage").value = "";
+    $("categoryImagePreview").innerHTML = "";
+    currentCategoryImageUrl = "";
+    $("categoryFormTitle").textContent = "Nova categoria";
+    $("categoryFormPanel").hidden = true;
+    setMessage("categoryFormMessage", "");
+  }
+  async function loadCategories() {
+    $("categoryList").innerHTML = '<p class="muted">Carregando...</p>';
+    const { data, error } = await client.from("categories").select("*").order("position", {ascending:true});
+    if (error) {
+      $("categoryList").innerHTML = "";
+      setMessage("dashboardMessage", "Não foi possível carregar categorias: " + error.message);
+      return;
+    }
+    if (!data.length) {
+      $("categoryList").innerHTML = '<p class="muted">Nenhuma categoria cadastrada.</p>';
+      return;
+    }
+    $("categoryList").innerHTML = data.map(item => `
+      <article class="banner-item">
+        ${item.image_url ? `<img src="${escapeHtml(item.image_url)}" alt="">` : '<div class="category-placeholder">Sem imagem</div>'}
+        <div><h3>${escapeHtml(item.name)}</h3><p>${escapeHtml(item.description || "")}</p><span class="status ${item.active ? "" : "off"}">${item.active ? "Visível" : "Oculta"}</span><p>Posição: ${item.position}</p></div>
+        <div class="item-actions">
+          <button class="secondary" data-category-edit="${item.id}">Editar</button>
+          <button class="secondary" data-category-toggle="${item.id}" data-active="${item.active}">${item.active ? "Ocultar" : "Mostrar"}</button>
+          <button class="secondary" data-category-delete="${item.id}">Excluir</button>
+        </div>
+      </article>`).join("");
+  }
+  async function editCategory(id) {
+    const {data,error}=await client.from("categories").select("*").eq("id",id).single();
+    if(error) return setMessage("dashboardMessage",error.message);
+    $("categoryId").value=data.id;
+    $("categoryName").value=data.name || "";
+    $("categorySlug").value=data.slug || "";
+    $("categoryDescription").value=data.description || "";
+    $("categoryIcon").value=data.icon || "";
+    $("categoryPosition").value=data.position || 1;
+    $("categoryActive").checked=!!data.active;
+    currentCategoryImageUrl=data.image_url || "";
+    $("categoryImagePreview").innerHTML=currentCategoryImageUrl ? `<img src="${escapeHtml(currentCategoryImageUrl)}" alt="Imagem atual">` : "";
+    $("categoryFormTitle").textContent="Editar categoria";
+    $("categoryFormPanel").hidden=false;
+    $("categoryFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  async function saveCategory(event) {
+    event.preventDefault();
+    setMessage("categoryFormMessage","Salvando categoria...");
+    try {
+      const file=$("categoryImage").files[0];
+      let imageUrl=currentCategoryImageUrl;
+      if(file) {
+        const ext=file.name.split(".").pop().toLowerCase();
+        const path="categories/"+crypto.randomUUID()+"."+ext;
+        const {error:uploadError}=await client.storage.from("site-images").upload(path,file,{upsert:false,contentType:file.type});
+        if(uploadError) throw uploadError;
+        imageUrl=client.storage.from("site-images").getPublicUrl(path).data.publicUrl;
+      }
+      const slug=$("categorySlug").value.trim().toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+        .replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+      if(!slug) throw new Error("Informe um identificador válido para a categoria.");
+      const payload={
+        name:$("categoryName").value.trim(),
+        slug,
+        description:$("categoryDescription").value.trim(),
+        icon:$("categoryIcon").value.trim() || "fa-solid fa-layer-group",
+        image_url:imageUrl || null,
+        position:Number($("categoryPosition").value),
+        active:$("categoryActive").checked,
+        updated_at:new Date().toISOString()
+      };
+      const id=$("categoryId").value;
+      const query=id ? client.from("categories").update(payload).eq("id",id) : client.from("categories").insert(payload);
+      const {error}=await query;
+      if(error) throw error;
+      resetCategoryForm();
+      setMessage("dashboardMessage","Categoria salva com sucesso.");
+      await loadCategories();
+    } catch(error) { setMessage("categoryFormMessage",error.message || "Erro ao salvar categoria."); }
+  }
+  async function handleCategoryClick(event) {
+    const editId=event.target.dataset.categoryEdit;
+    const toggleId=event.target.dataset.categoryToggle;
+    const deleteId=event.target.dataset.categoryDelete;
+    if(editId) return editCategory(editId);
+    if(toggleId) {
+      const active=event.target.dataset.active==="true";
+      const {error}=await client.from("categories").update({active:!active,updated_at:new Date().toISOString()}).eq("id",toggleId);
+      if(error) setMessage("dashboardMessage",error.message); else await loadCategories();
+    }
+    if(deleteId && confirm("Excluir esta categoria? Esta ação não pode ser desfeita.")) {
+      const {error}=await client.from("categories").delete().eq("id",deleteId);
+      if(error) setMessage("dashboardMessage",error.message);
+      else {setMessage("dashboardMessage","Categoria excluída.");await loadCategories();}
+    }
+  }
   async function init() {
     if (!hasConfig()) {
       setMessage("loginMessage", "Configure a URL e a chave pública do Supabase no arquivo admin/config.js para ativar o painel.");
@@ -154,15 +259,26 @@
     }
     client = window.supabase.createClient(window.CAMBARA_SUPABASE_URL, window.CAMBARA_SUPABASE_ANON_KEY);
     const { data } = await client.auth.getSession();
-    if (data.session) { showDashboard(true); await loadBanners(); }
+    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); }
   }
+  $("newCategoryButton").addEventListener("click", () => { resetCategoryForm(); $("categoryFormPanel").hidden=false; });
+  $("cancelCategoryButton").addEventListener("click", resetCategoryForm);
+  $("categoryForm").addEventListener("submit", saveCategory);
+  $("categoryList").addEventListener("click", handleCategoryClick);
+  $("categoryName").addEventListener("input", () => {
+    if (!$("categoryId").value) $("categorySlug").value=$("categoryName").value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  });
+  $("categoryImage").addEventListener("change", event => {
+    const file=event.target.files[0];
+    if(file) $("categoryImagePreview").innerHTML=`<img src="${URL.createObjectURL(file)}" alt="Prévia da imagem">`;
+  });
   $("loginForm").addEventListener("submit", async event => {
     event.preventDefault();
     if (!client) return;
     setMessage("loginMessage", "Entrando...");
     const { error } = await client.auth.signInWithPassword({ email: $("email").value, password: $("password").value });
     if (error) return setMessage("loginMessage", error.message);
-    showDashboard(true); setMessage("loginMessage", ""); await loadBanners();
+    showDashboard(true); setMessage("loginMessage", ""); await loadBanners(); await loadCategories();
   });
   $("logoutButton").addEventListener("click", async () => { await client.auth.signOut(); showDashboard(false); });
   $("newBannerButton").addEventListener("click", () => { resetForm(); $("bannerFormPanel").hidden = false; });
