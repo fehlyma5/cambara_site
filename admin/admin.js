@@ -401,6 +401,31 @@
     if(error) setMessage("teamMessage","Não foi possível alterar o perfil: "+error.message);
     else {setMessage("teamMessage","Perfil atualizado com sucesso.");await loadTeam();}
   }
+
+  async function loadDashboardStats() {
+    const now=new Date().toISOString();
+    const checks=[
+      ["statBanners",client.from("banners").select("id",{count:"exact",head:true})],
+      ["statCampaigns",client.from("banners").select("id",{count:"exact",head:true}).eq("active",true).or("starts_at.is.null,starts_at.lte."+now).or("ends_at.is.null,ends_at.gte."+now)],
+      ["statCategories",client.from("categories").select("id",{count:"exact",head:true}).eq("active",true)],
+      ["statGallery",client.from("gallery_photos").select("id",{count:"exact",head:true}).eq("active",true)]
+    ];
+    const results=await Promise.all(checks.map(async ([id,query])=>({id,...await query})));
+    results.forEach(result=>{
+      $(result.id).textContent=result.error ? "—" : String(result.count ?? 0);
+      if(result.error) console.warn("Cambará CMS: indicador indisponível",result.id,result.error.message);
+    });
+    const {data:userData}=await client.auth.getUser();
+    const {data:profile}=await client.from("profiles").select("role").eq("id",userData.user.id).maybeSingle();
+    if(profile?.role==="admin") {
+      $("statTeamCard").hidden=false;
+      const {count,error}=await client.from("profiles").select("id",{count:"exact",head:true});
+      $("statTeam").textContent=error ? "—" : String(count ?? 0);
+    } else {
+      $("statTeamCard").hidden=true;
+    }
+    $("statsUpdated").textContent="Atualizado em "+new Date().toLocaleString("pt-BR");
+  }
   async function init() {
     if (!hasConfig()) {
       setMessage("loginMessage", "Configure a URL e a chave pública do Supabase no arquivo admin/config.js para ativar o painel.");
@@ -413,7 +438,7 @@
     }
     client = window.supabase.createClient(window.CAMBARA_SUPABASE_URL, window.CAMBARA_SUPABASE_ANON_KEY);
     const { data } = await client.auth.getSession();
-    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); }
+    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats(); }
   }
   $("refreshTeamButton").addEventListener("click",loadTeam);
   $("teamList").addEventListener("click",handleTeamClick);
@@ -440,7 +465,7 @@
     setMessage("loginMessage", "Entrando...");
     const { error } = await client.auth.signInWithPassword({ email: $("email").value, password: $("password").value });
     if (error) return setMessage("loginMessage", error.message);
-    showDashboard(true); setMessage("loginMessage", ""); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam();
+    showDashboard(true); setMessage("loginMessage", ""); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats();
   });
   $("logoutButton").addEventListener("click", async () => { await client.auth.signOut(); showDashboard(false); });
   $("newBannerButton").addEventListener("click", () => { resetForm(); $("bannerFormPanel").hidden = false; });
