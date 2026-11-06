@@ -2,7 +2,9 @@
 // Cambará Madeireira — interações da landing page
 // ============================================
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // Aguarda a tentativa de carregar os banners do CMS antes de inicializar o slider.
+  await (window.CAMBARA_BANNERS_READY || Promise.resolve());
   // Ano automático no rodapé
   const year = document.getElementById("year");
   if (year) year.textContent = new Date().getFullYear();
