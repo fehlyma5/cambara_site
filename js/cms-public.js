@@ -43,9 +43,10 @@ window.CAMBARA_BANNERS_READY = (async () => {
 
       const background = document.createElement("div");
       background.className = "slide-bg";
-      background.style.backgroundImage =
-        "linear-gradient(90deg, rgba(17,12,8,.82), rgba(17,12,8,.30)), url(" +
-        JSON.stringify(banner.image_url) + ")";
+      background.style.backgroundImage = banner.display_text === false
+        ? "url(" + JSON.stringify(banner.image_url) + ")"
+        : "linear-gradient(90deg, rgba(17,12,8,.82), rgba(17,12,8,.30)), url(" +
+          JSON.stringify(banner.image_url) + ")";
 
       const content = document.createElement("div");
       content.className = "container hero-content";
