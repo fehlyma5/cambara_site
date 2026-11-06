@@ -12,6 +12,8 @@ as $$
   );
 $$;
 
+alter table public.profiles add column if not exists email text;
+
 -- Cria automaticamente um perfil editor para novos usuários do Auth.
 create or replace function public.handle_new_cms_user()
 returns trigger
@@ -20,8 +22,8 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, role)
-  values (new.id, 'editor')
+  insert into public.profiles (id, role, email)
+  values (new.id, 'editor', new.email)
   on conflict (id) do nothing;
   return new;
 end;
@@ -33,8 +35,8 @@ after insert on auth.users
 for each row execute procedure public.handle_new_cms_user();
 
 -- Garante perfil para usuários que já existiam antes desta migração.
-insert into public.profiles (id, role)
-select id, 'editor' from auth.users
+insert into public.profiles (id, role, email)
+select id, 'editor', email from auth.users
 on conflict (id) do nothing;
 
 alter table public.profiles enable row level security;
@@ -55,3 +57,5 @@ drop policy if exists "CMS admins can insert profiles" on public.profiles;
 create policy "CMS admins can insert profiles"
 on public.profiles for insert to authenticated
 with check (public.is_cms_admin() and role in ('admin','editor'));
+
+update public.profiles p set email = u.email from auth.users u where p.id = u.id and p.email is distinct from u.email;
