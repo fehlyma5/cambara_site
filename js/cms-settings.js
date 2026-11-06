@@ -7,7 +7,11 @@ window.CAMBARA_SETTINGS_READY = (async () => {
     if(error || !data) { if(error) console.warn("Cambará CMS: configurações não carregadas.",error.message); return; }
 
     const phone=String(data.whatsapp_phone || "").replace(/\D/g,"");
-    const message=encodeURIComponent(data.whatsapp_message || "Olá! Vim pelo site da Cambará e quero fazer um orçamento.");
+    const defaultMessage=data.whatsapp_message || "Olá! Vim pelo site da Cambará e quero fazer um orçamento.";
+    window.CAMBARA_WHATSAPP_PHONE=phone;
+    window.CAMBARA_WHATSAPP_MESSAGE=defaultMessage;
+    window.CAMBARA_WHATSAPP_URL=(text=defaultMessage)=>"https://wa.me/"+phone+"?text="+encodeURIComponent(text);
+    const message=encodeURIComponent(defaultMessage);
     if(phone) {
       document.querySelectorAll('a[href*="wa.me/"]').forEach(link=>{
         link.href="https://wa.me/"+phone+"?text="+message;
