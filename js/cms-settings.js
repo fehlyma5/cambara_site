@@ -13,9 +13,26 @@ window.CAMBARA_SETTINGS_READY = (async () => {
     window.CAMBARA_WHATSAPP_URL=(text=defaultMessage)=>"https://wa.me/"+phone+"?text="+encodeURIComponent(text);
     const message=encodeURIComponent(defaultMessage);
     if(phone) {
-      document.querySelectorAll('a[href*="wa.me/"]').forEach(link=>{
-        link.href="https://wa.me/"+phone+"?text="+message;
-      });
+      const defaultUrl="https://wa.me/"+phone+"?text="+message;
+      document.querySelectorAll('a[href*="wa.me/"]').forEach(link=>{ link.href=defaultUrl; });
+      // Captura categorias geradas pelo CMS e links de orçamento antes de qualquer handler antigo.
+      document.addEventListener("click", event=>{
+        const categoryCard=event.target.closest(".category-card");
+        if(categoryCard) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          const category=categoryCard.dataset.category || "materiais";
+          const categoryMessage="Olá! Gostaria de fazer um orçamento de materiais de "+category+" na Cambará.";
+          window.location.href="https://wa.me/"+phone+"?text="+encodeURIComponent(categoryMessage);
+          return;
+        }
+        const whatsappLink=event.target.closest('a[href*="wa.me/"]');
+        if(whatsappLink) {
+          const url=new URL(whatsappLink.href);
+          const text=url.searchParams.get("text") || defaultMessage;
+          whatsappLink.href="https://wa.me/"+phone+"?text="+encodeURIComponent(text);
+        }
+      }, true);
     }
 
     const socialMap={youtube:"youtube_url",instagram:"instagram_url",facebook:"facebook_url",tiktok:"tiktok_url"};
