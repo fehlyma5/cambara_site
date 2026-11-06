@@ -10,3 +10,24 @@ label{display:block;font-weight:700;font-size:.88rem;margin:15px 0 6px}input:not
 .preview img{max-width:100%;max-height:190px;object-fit:contain;border-radius:10px;margin-top:12px;background:#f5f1ec}.banner-list{display:grid;gap:12px}.banner-item{display:grid;grid-template-columns:150px 1fr auto;gap:16px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px}.banner-item img{width:150px;height:90px;object-fit:cover;border-radius:8px;background:#eee}.banner-item h3{font-size:1rem;margin:0 0 5px}.banner-item p{font-size:.82rem;color:var(--muted);margin:0}.item-actions{display:flex;gap:8px;flex-wrap:wrap}.item-actions button{font-size:.8rem;padding:8px 10px}.status{display:inline-block;font-size:.72rem;font-weight:800;border-radius:30px;padding:3px 9px;background:#e5f4ea;color:var(--green);margin-top:7px}.status.off{background:#f3e9e5;color:#96523a}.message{min-height:1.3em;font-size:.86rem;color:var(--wood);margin:12px 0 0}
 [hidden]{display:none!important}
 @media(max-width:700px){.shell{margin:20px auto}.login-card,.panel{padding:20px}.topbar,.intro{align-items:flex-start}.intro{flex-direction:column}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.banner-item{grid-template-columns:95px 1fr}.banner-item img{width:95px;height:80px}.item-actions{grid-column:1/-1}.panel-heading{align-items:flex-start}.topbar h1{font-size:1.7rem}}
+
+/* Indicadores do painel administrativo */
+.stats-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+  gap:12px;
+  margin:22px 0;
+}
+.stat-card {
+  background:#fff;
+  border:1px solid #eadfd6;
+  border-radius:14px;
+  padding:17px;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.stat-card span { color:#76675d; font-size:.82rem; }
+.stat-card strong { color:#542d19; font-size:1.8rem; line-height:1; }
+.stats-updated { grid-column:1/-1; font-size:.78rem; margin:0; }
+.team-avatar { width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#f4e8dc;color:#653b23; }
