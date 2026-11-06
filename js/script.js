@@ -53,6 +53,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     slides.forEach((slide, i) => {
       slide.classList.toggle("active", i === current);
     });
+    if (slides[current] && window.CAMBARA_TRACK_IMPRESSION) {
+      window.CAMBARA_TRACK_IMPRESSION(slides[current]);
+    }
 
     dots.forEach((dot, i) => {
       dot.classList.toggle("active", i === current);
@@ -106,6 +109,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }, { passive: true });
 
   startSlider();
+  if (slides[current] && window.CAMBARA_TRACK_IMPRESSION) {
+    window.CAMBARA_TRACK_IMPRESSION(slides[current]);
+  }
 
   // Categorias: preenche uma mensagem de WhatsApp específica
   const whatsappBase = "https://wa.me/5595999999999?text=";
