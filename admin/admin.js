@@ -285,6 +285,147 @@
     const {error}=await client.from("site_settings").upsert(payload,{onConflict:"id"});
     setMessage("settingsMessage",error ? "Erro ao salvar: "+error.message : "Configurações salvas com sucesso.");
   }
+
+  let currentGalleryImageUrl = "";
+  function resetGalleryForm() {
+    $("galleryForm").reset();
+    $("galleryId").value="";
+    $("galleryPosition").value="1";
+    $("galleryActive").checked=true;
+    $("galleryImage").value="";
+    $("galleryImagePreview").innerHTML="";
+    currentGalleryImageUrl="";
+    $("galleryFormTitle").textContent="Adicionar foto";
+    $("galleryFormPanel").hidden=true;
+    setMessage("galleryFormMessage","");
+  }
+  async function loadGallery() {
+    $("galleryList").innerHTML='<p class="muted">Carregando...</p>';
+    const {data,error}=await client.from("gallery_photos").select("*").order("position",{ascending:true});
+    if(error) { $("galleryList").innerHTML=""; return setMessage("dashboardMessage","Erro ao carregar galeria: "+error.message); }
+    if(!data.length) { $("galleryList").innerHTML='<p class="muted">Nenhuma foto cadastrada.</p>'; return; }
+    $("galleryList").innerHTML=data.map(item=>`
+      <article class="banner-item">
+        <img src="${escapeHtml(item.image_url)}" alt="">
+        <div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.caption || "")}</p><span class="status ${item.active ? "" : "off"}">${item.active ? "Publicada" : "Oculta"}</span><p>Posição: ${item.position}</p></div>
+        <div class="item-actions"><button class="secondary" data-gallery-edit="${item.id}">Editar</button><button class="secondary" data-gallery-toggle="${item.id}" data-active="${item.active}">${item.active ? "Ocultar" : "Publicar"}</button><button class="secondary" data-gallery-delete="${item.id}">Excluir</button></div>
+      </article>`).join("");
+  }
+  async function editGalleryPhoto(id) {
+    const {data,error}=await client.from("gallery_photos").select("*").eq("id",id).single();
+    if(error) return setMessage("dashboardMessage",error.message);
+    $("galleryId").value=data.id;
+    $("galleryTitle").value=data.title || "";
+    $("galleryCaption").value=data.caption || "";
+    $("galleryPosition").value=data.position || 1;
+    $("galleryActive").checked=!!data.active;
+    currentGalleryImageUrl=data.image_url || "";
+    $("galleryImagePreview").innerHTML=currentGalleryImageUrl ? `<img src="${escapeHtml(currentGalleryImageUrl)}" alt="Imagem atual">` : "";
+    $("galleryFormTitle").textContent="Editar foto";
+    $("galleryFormPanel").hidden=false;
+    $("galleryFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  async function saveGalleryPhoto(event) {
+    event.preventDefault();
+    setMessage("galleryFormMessage","Salvando foto...");
+    try {
+      const file=$("galleryImage").files[0];
+      let imageUrl=currentGalleryImageUrl;
+      if(file) {
+        if(!["image/jpeg","image/png","image/webp"].includes(file.type)) throw new Error("Use uma imagem JPG, PNG ou WebP.");
+        if(file.size>2*1024*1024) throw new Error("A imagem deve ter até 2 MB. Comprima o arquivo antes de enviar.");
+        const ext=file.name.split(".").pop().toLowerCase();
+        const path="gallery/"+crypto.randomUUID()+"."+ext;
+        const {error:uploadError}=await client.storage.from("site-images").upload(path,file,{upsert:false,contentType:file.type});
+        if(uploadError) throw uploadError;
+        imageUrl=client.storage.from("site-images").getPublicUrl(path).data.publicUrl;
+      }
+      if(!imageUrl) throw new Error("Selecione uma imagem.");
+      const payload={title:$("galleryTitle").value.trim(),caption:$("galleryCaption").value.trim() || null,image_url:imageUrl,position:Number($("galleryPosition").value),active:$("galleryActive").checked,updated_at:new Date().toISOString()};
+      const id=$("galleryId").value;
+      const query=id ? client.from("gallery_photos").update(payload).eq("id",id) : client.from("gallery_photos").insert(payload);
+      const {error}=await query;
+      if(error) throw error;
+      resetGalleryForm();
+      setMessage("dashboardMessage","Foto salva com sucesso.");
+      await loadGallery();
+    } catch(error) { setMessage("galleryFormMessage",error.message || "Erro ao salvar foto."); }
+  }
+  async function handleGalleryClick(event) {
+    const editId=event.target.dataset.galleryEdit;
+    const toggleId=event.target.dataset.galleryToggle;
+    const deleteId=event.target.dataset.galleryDelete;
+    if(editId) return editGalleryPhoto(editId);
+    if(toggleId) {
+      const active=event.target.dataset.active==="true";
+      const {error}=await client.from("gallery_photos").update({active:!active,updated_at:new Date().toISOString()}).eq("id",toggleId);
+      if(error) setMessage("dashboardMessage",error.message); else await loadGallery();
+    }
+    if(deleteId && confirm("Excluir esta foto da galeria?")) {
+      const {error}=await client.from("gallery_photos").delete().eq("id",deleteId);
+      if(error) setMessage("dashboardMessage",error.message); else {setMessage("dashboardMessage","Foto excluída.");await loadGallery();}
+    }
+  }
+
+  async function loadTeam() {
+    $("teamList").innerHTML='<p class="muted">Carregando equipe...</p>';
+    const {data:me,error:meError}=await client.from("profiles").select("role").eq("id",(await client.auth.getUser()).data.user.id).single();
+    if(meError || me?.role!=="admin") {
+      $("teamList").innerHTML='<p class="muted">Apenas administradores podem consultar e gerenciar a equipe.</p>';
+      return;
+    }
+    const {data,error}=await client.from("profiles").select("id,email,role,created_at").order("created_at",{ascending:true});
+    if(error) { $("teamList").innerHTML=""; return setMessage("teamMessage","Erro ao carregar equipe: "+error.message); }
+    $("teamList").innerHTML=data.map(user=>`
+      <article class="banner-item">
+        <div class="team-avatar"><i class="fa-solid fa-user"></i></div>
+        <div><h3>${escapeHtml(user.email || "E-mail não disponível")}</h3><span class="status ${user.role==="admin" ? "" : "off"}">${user.role==="admin" ? "Administrador" : "Editor"}</span></div>
+        <div class="item-actions">
+          <select aria-label="Perfil de ${escapeHtml(user.email || "usuário")}" data-team-role="${user.id}">
+            <option value="editor" ${user.role==="editor"?"selected":""}>Editor</option>
+            <option value="admin" ${user.role==="admin"?"selected":""}>Administrador</option>
+          </select>
+          <button class="secondary" type="button" data-team-save="${user.id}">Salvar perfil</button>
+        </div>
+      </article>`).join("");
+  }
+  async function handleTeamClick(event) {
+    const id=event.target.dataset.teamSave;
+    if(!id) return;
+    const select=$("teamList").querySelector('[data-team-role="'+id+'"]');
+    if(!select) return;
+    if(id===(await client.auth.getUser()).data.user.id && select.value!=="admin") {
+      return setMessage("teamMessage","Não é permitido remover seu próprio acesso de administrador.");
+    }
+    const {error}=await client.from("profiles").update({role:select.value}).eq("id",id);
+    if(error) setMessage("teamMessage","Não foi possível alterar o perfil: "+error.message);
+    else {setMessage("teamMessage","Perfil atualizado com sucesso.");await loadTeam();}
+  }
+
+  async function loadDashboardStats() {
+    const now=new Date().toISOString();
+    const checks=[
+      ["statBanners",client.from("banners").select("id",{count:"exact",head:true})],
+      ["statCampaigns",client.from("banners").select("id",{count:"exact",head:true}).eq("active",true).or("starts_at.is.null,starts_at.lte."+now).or("ends_at.is.null,ends_at.gte."+now)],
+      ["statCategories",client.from("categories").select("id",{count:"exact",head:true}).eq("active",true)],
+      ["statGallery",client.from("gallery_photos").select("id",{count:"exact",head:true}).eq("active",true)]
+    ];
+    const results=await Promise.all(checks.map(async ([id,query])=>({id,...await query})));
+    results.forEach(result=>{
+      $(result.id).textContent=result.error ? "—" : String(result.count ?? 0);
+      if(result.error) console.warn("Cambará CMS: indicador indisponível",result.id,result.error.message);
+    });
+    const {data:userData}=await client.auth.getUser();
+    const {data:profile}=await client.from("profiles").select("role").eq("id",userData.user.id).maybeSingle();
+    if(profile?.role==="admin") {
+      $("statTeamCard").hidden=false;
+      const {count,error}=await client.from("profiles").select("id",{count:"exact",head:true});
+      $("statTeam").textContent=error ? "—" : String(count ?? 0);
+    } else {
+      $("statTeamCard").hidden=true;
+    }
+    $("statsUpdated").textContent="Atualizado em "+new Date().toLocaleString("pt-BR");
+  }
   async function init() {
     if (!hasConfig()) {
       setMessage("loginMessage", "Configure a URL e a chave pública do Supabase no arquivo admin/config.js para ativar o painel.");
@@ -297,8 +438,15 @@
     }
     client = window.supabase.createClient(window.CAMBARA_SUPABASE_URL, window.CAMBARA_SUPABASE_ANON_KEY);
     const { data } = await client.auth.getSession();
-    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); }
+    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats(); }
   }
+  $("refreshTeamButton").addEventListener("click",loadTeam);
+  $("teamList").addEventListener("click",handleTeamClick);
+  $("galleryForm").addEventListener("submit",saveGalleryPhoto);
+  $("newPhotoButton").addEventListener("click",()=>{resetGalleryForm();$("galleryFormPanel").hidden=false;});
+  $("cancelGalleryButton").addEventListener("click",resetGalleryForm);
+  $("galleryList").addEventListener("click",handleGalleryClick);
+  $("galleryImage").addEventListener("change",event=>{const file=event.target.files[0];if(file)$("galleryImagePreview").innerHTML=`<img src="${URL.createObjectURL(file)}" alt="Prévia da imagem">`;});
   $("settingsForm").addEventListener("submit", saveSettings);
   $("newCategoryButton").addEventListener("click", () => { resetCategoryForm(); $("categoryFormPanel").hidden=false; });
   $("cancelCategoryButton").addEventListener("click", resetCategoryForm);
@@ -317,7 +465,7 @@
     setMessage("loginMessage", "Entrando...");
     const { error } = await client.auth.signInWithPassword({ email: $("email").value, password: $("password").value });
     if (error) return setMessage("loginMessage", error.message);
-    showDashboard(true); setMessage("loginMessage", ""); await loadBanners(); await loadCategories(); await loadSettings();
+    showDashboard(true); setMessage("loginMessage", ""); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats();
   });
   $("logoutButton").addEventListener("click", async () => { await client.auth.signOut(); showDashboard(false); });
   $("newBannerButton").addEventListener("click", () => { resetForm(); $("bannerFormPanel").hidden = false; });
