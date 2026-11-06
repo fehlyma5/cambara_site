@@ -804,7 +804,6 @@ button { font: inherit; }
   width: 260px;
   min-height: 285px;
 }
-.category-grid.category-marquee:hover .category-track,
 .category-grid.category-marquee.is-paused .category-track {
   animation-play-state: paused;
 }
