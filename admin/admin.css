@@ -31,3 +31,56 @@ label{display:block;font-weight:700;font-size:.88rem;margin:15px 0 6px}input:not
 .stat-card strong { color:#542d19; font-size:1.8rem; line-height:1; }
 .stats-updated { grid-column:1/-1; font-size:.78rem; margin:0; }
 .team-avatar { width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#f4e8dc;color:#653b23; }
+
+
+/* Dashboard: cards de indicadores com hierarquia visual reforçada */
+.dashboard-overview {
+  margin: 22px 0 30px;
+  padding: 22px;
+  background: #fffaf5;
+  border: 1px solid #eadfd6;
+  border-radius: 18px;
+}
+.dashboard-section-heading { margin-bottom: 16px; }
+.dashboard-section-heading h2 { margin: 0 0 5px; color: #542d19; font-size: 1.15rem; }
+.dashboard-section-heading p { margin: 0; color: #76675d; font-size: .88rem; }
+.dashboard-overview .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 14px;
+  margin: 0;
+}
+.dashboard-overview .stat-card {
+  min-height: 124px;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid #eadfd6;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 5px 16px rgba(70,43,25,.045);
+}
+.dashboard-overview .stat-card span {
+  color: #76675d;
+  font-size: .82rem;
+  line-height: 1.4;
+}
+.dashboard-overview .stat-card strong {
+  color: #542d19;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.dashboard-overview .stats-updated {
+  grid-column: 1/-1;
+  margin: 2px 0 0;
+  font-size: .76rem;
+}
+@media(max-width:900px) {
+  .dashboard-overview .stats-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:480px) {
+  .dashboard-overview { padding: 15px; }
+  .dashboard-overview .stats-grid { grid-template-columns: 1fr 1fr; gap: 9px; }
+  .dashboard-overview .stat-card { min-height: 108px; padding: 13px; }
+  .dashboard-overview .stat-card strong { font-size: 1.7rem; }
+}
