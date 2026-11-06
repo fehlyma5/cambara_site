@@ -247,6 +247,44 @@
       else {setMessage("dashboardMessage","Categoria excluída.");await loadCategories();}
     }
   }
+
+  async function loadSettings() {
+    const {data,error}=await client.from("site_settings").select("*").eq("id",1).maybeSingle();
+    if(error) return setMessage("settingsMessage","Não foi possível carregar configurações: "+error.message);
+    if(!data) return;
+    $("settingsWhatsapp").value=data.whatsapp_phone || "";
+    $("settingsWhatsappMessage").value=data.whatsapp_message || "";
+    $("settingsYoutube").value=data.youtube_url || "";
+    $("settingsInstagram").value=data.instagram_url || "";
+    $("settingsFacebook").value=data.facebook_url || "";
+    $("settingsTiktok").value=data.tiktok_url || "";
+    $("settingsAboutTitle").value=data.about_title || "";
+    $("settingsAboutText").value=data.about_text || "";
+    $("settingsAboutExtra").value=data.about_extra || "";
+  }
+  async function saveSettings(event) {
+    event.preventDefault();
+    setMessage("settingsMessage","Salvando configurações...");
+    const payload={
+      id:1,
+      whatsapp_phone:$("settingsWhatsapp").value.replace(/\D/g,""),
+      whatsapp_message:$("settingsWhatsappMessage").value.trim(),
+      youtube_url:$("settingsYoutube").value.trim(),
+      instagram_url:$("settingsInstagram").value.trim(),
+      facebook_url:$("settingsFacebook").value.trim(),
+      tiktok_url:$("settingsTiktok").value.trim(),
+      about_title:$("settingsAboutTitle").value.trim(),
+      about_text:$("settingsAboutText").value.trim(),
+      about_extra:$("settingsAboutExtra").value.trim(),
+      updated_at:new Date().toISOString()
+    };
+    if(payload.whatsapp_phone && !/^\d{10,15}$/.test(payload.whatsapp_phone)) return setMessage("settingsMessage","Informe o WhatsApp com código do país e DDD, somente números.");
+    for(const field of ["youtube_url","instagram_url","facebook_url","tiktok_url"]) {
+      if(payload[field] && !/^https?:\/\//i.test(payload[field])) return setMessage("settingsMessage","Os links das redes sociais precisam começar com https:// ou http://.");
+    }
+    const {error}=await client.from("site_settings").upsert(payload,{onConflict:"id"});
+    setMessage("settingsMessage",error ? "Erro ao salvar: "+error.message : "Configurações salvas com sucesso.");
+  }
   async function init() {
     if (!hasConfig()) {
       setMessage("loginMessage", "Configure a URL e a chave pública do Supabase no arquivo admin/config.js para ativar o painel.");
@@ -259,8 +297,9 @@
     }
     client = window.supabase.createClient(window.CAMBARA_SUPABASE_URL, window.CAMBARA_SUPABASE_ANON_KEY);
     const { data } = await client.auth.getSession();
-    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); }
+    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); }
   }
+  $("settingsForm").addEventListener("submit", saveSettings);
   $("newCategoryButton").addEventListener("click", () => { resetCategoryForm(); $("categoryFormPanel").hidden=false; });
   $("cancelCategoryButton").addEventListener("click", resetCategoryForm);
   $("categoryForm").addEventListener("submit", saveCategory);
@@ -278,7 +317,7 @@
     setMessage("loginMessage", "Entrando...");
     const { error } = await client.auth.signInWithPassword({ email: $("email").value, password: $("password").value });
     if (error) return setMessage("loginMessage", error.message);
-    showDashboard(true); setMessage("loginMessage", ""); await loadBanners(); await loadCategories();
+    showDashboard(true); setMessage("loginMessage", ""); await loadBanners(); await loadCategories(); await loadSettings();
   });
   $("logoutButton").addEventListener("click", async () => { await client.auth.signOut(); showDashboard(false); });
   $("newBannerButton").addEventListener("click", () => { resetForm(); $("bannerFormPanel").hidden = false; });
