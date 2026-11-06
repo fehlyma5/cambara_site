@@ -91,6 +91,25 @@
         </section>
         <div id="categoryList" class="banner-list"><p class="muted">Carregando categorias...</p></div>
       </section>
+
+      <section class="panel" id="settingsPanel">
+        <div class="panel-heading"><div><h2>Configurações do site</h2><p class="muted">Atualize contatos, redes sociais e apresentação institucional.</p></div></div>
+        <form id="settingsForm">
+          <div class="form-grid">
+            <div class="field"><label for="settingsWhatsapp">WhatsApp (com código do país e DDD)</label><input id="settingsWhatsapp" inputmode="numeric" placeholder="5595999999999"></div>
+            <div class="field"><label for="settingsWhatsappMessage">Mensagem padrão do WhatsApp</label><input id="settingsWhatsappMessage" maxlength="250"></div>
+            <div class="field"><label for="settingsYoutube">YouTube</label><input id="settingsYoutube" type="url" placeholder="https://youtube.com/..."></div>
+            <div class="field"><label for="settingsInstagram">Instagram</label><input id="settingsInstagram" type="url" placeholder="https://instagram.com/..."></div>
+            <div class="field"><label for="settingsFacebook">Facebook</label><input id="settingsFacebook" type="url" placeholder="https://facebook.com/..."></div>
+            <div class="field"><label for="settingsTiktok">TikTok</label><input id="settingsTiktok" type="url" placeholder="https://tiktok.com/@..."></div>
+            <div class="field full"><label for="settingsAboutTitle">Título da seção Sobre</label><input id="settingsAboutTitle" maxlength="180"></div>
+            <div class="field full"><label for="settingsAboutText">Texto institucional</label><textarea id="settingsAboutText" rows="3" maxlength="600"></textarea></div>
+            <div class="field full"><label for="settingsAboutExtra">Texto complementar</label><textarea id="settingsAboutExtra" rows="3" maxlength="600"></textarea></div>
+          </div>
+          <div class="actions"><button class="primary" type="submit">Salvar configurações</button></div>
+          <p id="settingsMessage" class="message" role="status"></p>
+        </form>
+      </section>
       <p id="dashboardMessage" class="message" role="status"></p>
     </section>
   </main>
