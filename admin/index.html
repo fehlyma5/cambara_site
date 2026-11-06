@@ -110,6 +110,26 @@
           <p id="settingsMessage" class="message" role="status"></p>
         </form>
       </section>
+
+      <section class="panel" id="galleryPanel">
+        <div class="panel-heading"><div><h2>Galeria institucional</h2><p class="muted">Publique fotos da loja, madeiras, produtos, equipe e ambientes.</p></div><button id="newPhotoButton" class="primary" type="button">+ Adicionar foto</button></div>
+        <section id="galleryFormPanel" hidden>
+          <h3 id="galleryFormTitle">Adicionar foto</h3>
+          <form id="galleryForm">
+            <input id="galleryId" type="hidden">
+            <div class="form-grid">
+              <div class="field"><label for="galleryTitle">Título da foto</label><input id="galleryTitle" maxlength="100" required placeholder="Ex.: Fachada da loja"></div>
+              <div class="field"><label for="galleryPosition">Ordem de exibição</label><input id="galleryPosition" type="number" min="1" value="1" required></div>
+              <div class="field full"><label for="galleryCaption">Legenda (opcional)</label><textarea id="galleryCaption" rows="2" maxlength="240" placeholder="Conte um pouco sobre esta imagem"></textarea></div>
+              <div class="field full"><label for="galleryImage">Imagem (JPG, PNG ou WebP)</label><input id="galleryImage" type="file" accept="image/jpeg,image/png,image/webp"><small>Prefira imagens otimizadas para web, com até 2 MB.</small><div id="galleryImagePreview" class="preview"></div></div>
+              <label class="switch-field"><input id="galleryActive" type="checkbox" checked> Foto visível na galeria pública</label>
+            </div>
+            <div class="actions"><button class="primary" type="submit">Salvar foto</button><button class="secondary" id="cancelGalleryButton" type="button">Cancelar</button></div>
+            <p id="galleryFormMessage" class="message" role="status"></p>
+          </form>
+        </section>
+        <div id="galleryList" class="banner-list"><p class="muted">Carregando galeria...</p></div>
+      </section>
       <p id="dashboardMessage" class="message" role="status"></p>
     </section>
   </main>
