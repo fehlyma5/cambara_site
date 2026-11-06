@@ -51,7 +51,7 @@
     $("bannerList").innerHTML = data.map(item => `
       <article class="banner-item">
         <img src="${escapeHtml(item.image_url)}" alt="">
-        <div><h3>${escapeHtml(item.title)}</h3><p>Posição: ${item.position} · ${escapeHtml(item.campaign_label || item.eyebrow || "Sem campanha")}</p><span class="status ${item.active ? "" : "off"}">${item.active ? "Ativo" : "Inativo"}</span><p>Período: ${item.starts_at ? new Date(item.starts_at).toLocaleString("pt-BR") : "Sem início"} até ${item.ends_at ? new Date(item.ends_at).toLocaleString("pt-BR") : "Sem término"}</p></div>
+        <div><h3>${escapeHtml(item.title)}</h3><p>Posição: ${item.position} · ${escapeHtml(item.campaign_label || item.eyebrow || "Sem campanha")}</p><span class="status ${!item.active || (item.starts_at && new Date(item.starts_at) > new Date()) || (item.ends_at && new Date(item.ends_at) < new Date()) ? "off" : ""}">${!item.active ? "Desativado" : item.starts_at && new Date(item.starts_at) > new Date() ? "Agendado" : item.ends_at && new Date(item.ends_at) < new Date() ? "Encerrado" : "Publicado"}</span><p>Período: ${item.starts_at ? new Date(item.starts_at).toLocaleString("pt-BR") : "Sem início"} até ${item.ends_at ? new Date(item.ends_at).toLocaleString("pt-BR") : "Sem término"}</p></div>
         <div class="item-actions">
           <button class="secondary" data-edit="${item.id}">Editar</button>
           <button class="secondary" data-toggle="${item.id}" data-active="${item.active}">${item.active ? "Desativar" : "Ativar"}</button>
