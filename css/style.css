@@ -84,7 +84,7 @@ button { font: inherit; }
   margin-right: auto;
 }
 
-.logo-mark {
+.logo-image {\n  display: block;\n  width: 190px;\n  height: 62px;\n  object-fit: contain;\n  object-position: left center;\n}\n\n.logo-mark {
   width: 43px;
   height: 43px;
   border-radius: 12px;
@@ -680,7 +680,7 @@ button { font: inherit; }
 
   .topbar { display: none; }
 
-  .logo strong { font-size: 1rem; }
+  .logo-image { width: 158px; height: 54px; }\n  .logo strong { font-size: 1rem; }
   .logo small { font-size: .48rem; }
 
   .hero, .hero-content { min-height: 600px; }
