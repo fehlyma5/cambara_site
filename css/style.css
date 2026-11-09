@@ -84,7 +84,15 @@ button { font: inherit; }
   margin-right: auto;
 }
 
-.logo-image {\n  display: block;\n  width: 190px;\n  height: 62px;\n  object-fit: contain;\n  object-position: left center;\n}\n\n.logo-mark {
+.logo-image {
+  display: block;
+  width: 190px;
+  height: 62px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.logo-mark {
   width: 43px;
   height: 43px;
   border-radius: 12px;
@@ -414,7 +422,9 @@ button { font: inherit; }
 .category-card:hover span i { transform: translateX(4px); }
 
 /* About */
-.about { background: linear-gradient(115deg, #FFFFFF 0%, #FFF8F1 100%); }\n\n.about-grid {
+.about { background: linear-gradient(115deg, #FFFFFF 0%, #FFF8F1 100%); }
+
+.about-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 80px;
@@ -520,7 +530,9 @@ button { font: inherit; }
   gap: 30px;
   padding: 48px 55px;
   border-radius: 24px;
-  background: linear-gradient(135deg, #593B1D 0%, #3D2817 100%);\n  color: #fff;\n  border: 1px solid rgba(255,255,255,.18);
+  background: linear-gradient(135deg, #593B1D 0%, #3D2817 100%);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.18);
   border: 1px solid var(--border);
 }
 
@@ -680,7 +692,8 @@ button { font: inherit; }
 
   .topbar { display: none; }
 
-  .logo-image { width: 158px; height: 54px; }\n  .logo strong { font-size: 1rem; }
+  .logo-image { width: 158px; height: 54px; }
+  .logo strong { font-size: 1rem; }
   .logo small { font-size: .48rem; }
 
   .hero, .hero-content { min-height: 600px; }
