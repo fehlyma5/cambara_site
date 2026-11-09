@@ -834,3 +834,15 @@ button { font: inherit; }
   .category-track { animation: none; }
   .category-grid.category-marquee { overflow-x: auto; }
 }
+
+
+/* Logo oficial no rodapé */
+.logo-footer-image {
+  width: 205px;
+  height: 88px;
+  object-fit: contain;
+  object-position: center;
+  padding: 8px 12px;
+  background: #fff;
+  border-radius: 10px;
+}
