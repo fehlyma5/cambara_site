@@ -1,16 +1,18 @@
 :root {
-  --brown-950: #1b120c;
-  --brown-900: #2a190f;
-  --brown-800: #3b2415;
-  --brown-700: #5a351d;
-  --brown-600: #704523;
-  --wood: #a96c35;
-  --gold: #d7a45b;
-  --cream: #f8f4ed;
+  /* Paleta oficial Cambará — Manual de Identidade Visual, p. 11 */
+  --orange: #F58220;
+  --brown-950: #24170e;
+  --brown-900: #593B1D;
+  --brown-800: #684522;
+  --brown-700: #7a5128;
+  --brown-600: #925d2c;
+  --wood: #B86B24;
+  --gold: #F58220;
+  --cream: #FFF3E8;
   --white: #ffffff;
-  --text: #2d241e;
-  --muted: #766b63;
-  --border: #e8ded3;
+  --text: #302116;
+  --muted: #725d4b;
+  --border: #F0D4BB;
   --green: #25d366;
   --shadow: 0 18px 50px rgba(42, 25, 15, .12);
   --radius: 18px;
@@ -89,7 +91,7 @@ button { font: inherit; }
   display: grid;
   place-items: center;
   color: var(--white);
-  background: linear-gradient(135deg, var(--brown-800), var(--wood));
+  background: linear-gradient(135deg, var(--orange), var(--brown-900));
   font-size: 1.15rem;
 }
 
@@ -352,7 +354,7 @@ button { font: inherit; }
 .section-heading p { color: var(--muted); margin-top: 15px; }
 
 /* Categories */
-.categories { background: var(--cream); }
+.categories { background: linear-gradient(135deg, #FFF7EF 0%, #FDE2C9 48%, #FFF2E5 100%); }
 
 .category-grid {
   display: grid;
@@ -373,7 +375,7 @@ button { font: inherit; }
 
 .category-card:hover {
   transform: translateY(-8px);
-  border-color: #d7b388;
+  border-color: var(--orange);
   box-shadow: var(--shadow);
 }
 
@@ -383,7 +385,7 @@ button { font: inherit; }
   display: grid;
   place-items: center;
   border-radius: 16px;
-  background: #f4eadc;
+  background: #FFE1C5;
   color: var(--wood);
   font-size: 1.4rem;
   margin-bottom: 24px;
@@ -412,7 +414,7 @@ button { font: inherit; }
 .category-card:hover span i { transform: translateX(4px); }
 
 /* About */
-.about-grid {
+.about { background: linear-gradient(115deg, #FFFFFF 0%, #FFF8F1 100%); }\n\n.about-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 80px;
@@ -518,12 +520,12 @@ button { font: inherit; }
   gap: 30px;
   padding: 48px 55px;
   border-radius: 24px;
-  background: linear-gradient(135deg, #fff, #f0e4d4);
+  background: linear-gradient(135deg, #593B1D 0%, #3D2817 100%);\n  color: #fff;\n  border: 1px solid rgba(255,255,255,.18);
   border: 1px solid var(--border);
 }
 
-.cta h2 { font-size: clamp(1.8rem, 3vw, 2.8rem); }
-.cta p { color: var(--muted); margin-top: 8px; }
+.cta h2 { color: #fff; font-size: clamp(1.8rem, 3vw, 2.8rem); }
+.cta p { color: #FBE5D2; margin-top: 8px; }
 
 /* Footer */
 .footer {
