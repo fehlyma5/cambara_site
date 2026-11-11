@@ -947,3 +947,15 @@ button { font: inherit; }
     padding: 0 12px;
   }
 }
+
+
+/* Ajuste de ritmo visual desktop: categorias mais próximas do banner */
+@media (min-width: 761px) {
+  .categories.section {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+  .categories .section-heading {
+    margin-bottom: 34px;
+  }
+}
