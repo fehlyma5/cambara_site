@@ -43,11 +43,13 @@ window.CAMBARA_BANNERS_READY = (async () => {
 
       const background = document.createElement("div");
       background.className = "slide-bg";
-      background.style.setProperty("--banner-desktop", "url(" + JSON.stringify(banner.image_url) + ")");
-      background.style.setProperty("--banner-mobile", "url(" + JSON.stringify(banner.mobile_image_url || banner.image_url) + ")");
-      background.style.setProperty("--banner-overlay", banner.display_text === false
+      const desktopLayer = "url(" + JSON.stringify(banner.image_url) + ")";
+      const mobileLayer = "url(" + JSON.stringify(banner.mobile_image_url || banner.image_url) + ")";
+      const overlay = banner.display_text === false
         ? ""
-        : "linear-gradient(90deg, rgba(17,12,8,.82), rgba(17,12,8,.30)), ");
+        : "linear-gradient(90deg, rgba(17,12,8,.82), rgba(17,12,8,.30)), ";
+      background.style.setProperty("--banner-desktop-image", overlay + desktopLayer);
+      background.style.setProperty("--banner-mobile-image", overlay + mobileLayer);
 
       const content = document.createElement("div");
       content.className = "container hero-content";
