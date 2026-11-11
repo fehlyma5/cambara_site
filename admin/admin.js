@@ -413,6 +413,47 @@
     else {setMessage("teamMessage","Perfil atualizado com sucesso.");await loadTeam();}
   }
 
+  async function loadCampaignReport() {
+    const panel=$("campaignReportsPanel");
+    if(!panel) return;
+    const {data:userData}=await client.auth.getUser();
+    const userId=userData?.user?.id;
+    if(!userId) { panel.hidden=true; return; }
+    const {data:profile,error:profileError}=await client.from("profiles").select("role").eq("id",userId).maybeSingle();
+    if(profileError || profile?.role!=="admin") { panel.hidden=true; return; }
+    panel.hidden=false;
+    $("campaignReportRows").innerHTML='<tr><td colspan="4">Carregando relatório...</td></tr>';
+    const days=Number($("reportPeriod").value || 7);
+    const since=new Date();
+    if(days===1) since.setHours(0,0,0,0);
+    else since.setDate(since.getDate()-days);
+    const {data,error}=await client.from("campaign_events")
+      .select("banner_id,campaign_label,event_type,created_at")
+      .gte("created_at",since.toISOString())
+      .order("created_at",{ascending:false})
+      .limit(10000);
+    if(error) {
+      $("campaignReportRows").innerHTML='<tr><td colspan="4">Não foi possível carregar os eventos.</td></tr>';
+      setMessage("reportMessage","Erro ao consultar métricas: "+error.message+". Verifique se a tabela campaign_events existe e se a política de leitura para administradores está ativa.");
+      $("reportImpressions").textContent=$("reportBannerClicks").textContent=$("reportWhatsappClicks").textContent="—";
+      return;
+    }
+    const totals={impression:0,banner_click:0,whatsapp_click:0};
+    const groups=new Map();
+    (data||[]).forEach(item=>{
+      if(!(item.event_type in totals)) return;
+      totals[item.event_type]++;
+      const key=item.banner_id || item.campaign_label || "origem-sem-identificacao";
+      if(!groups.has(key)) groups.set(key,{name:item.campaign_label || "Campanha sem identificação",impression:0,banner_click:0,whatsapp_click:0});
+      groups.get(key)[item.event_type]++;
+    });
+    $("reportImpressions").textContent=String(totals.impression);
+    $("reportBannerClicks").textContent=String(totals.banner_click);
+    $("reportWhatsappClicks").textContent=String(totals.whatsapp_click);
+    const rows=[...groups.values()].sort((a,b)=>(b.impression+b.banner_click+b.whatsapp_click)-(a.impression+a.banner_click+a.whatsapp_click));
+    $("campaignReportRows").innerHTML=rows.length?rows.map(row=>'<tr><td>'+escapeHtml(row.name)+'</td><td>'+row.impression+'</td><td>'+row.banner_click+'</td><td>'+row.whatsapp_click+'</td></tr>').join(""):'<tr><td colspan="4">Ainda não há eventos neste período. Os registros começam após a publicação desta versão.</td></tr>';
+    setMessage("reportMessage","Dados desde "+since.toLocaleString("pt-BR")+". Impressões são contadas após pelo menos 1 segundo de exibição.");
+  }
   async function loadDashboardStats() {
     const now=new Date().toISOString();
     const checks=[
@@ -449,8 +490,9 @@
     }
     client = window.supabase.createClient(window.CAMBARA_SUPABASE_URL, window.CAMBARA_SUPABASE_ANON_KEY);
     const { data } = await client.auth.getSession();
-    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats(); }
+    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats(); await loadCampaignReport(); }
   }
+  $("reportPeriod").addEventListener("change",loadCampaignReport);
   $("refreshTeamButton").addEventListener("click",loadTeam);
   $("teamList").addEventListener("click",handleTeamClick);
   $("galleryForm").addEventListener("submit",saveGalleryPhoto);
@@ -476,7 +518,7 @@
     setMessage("loginMessage", "Entrando...");
     const { error } = await client.auth.signInWithPassword({ email: $("email").value, password: $("password").value });
     if (error) return setMessage("loginMessage", error.message);
-    showDashboard(true); setMessage("loginMessage", ""); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats();
+    showDashboard(true); setMessage("loginMessage", ""); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats(); await loadCampaignReport();
   });
   $("logoutButton").addEventListener("click", async () => { await client.auth.signOut(); showDashboard(false); });
   $("newBannerButton").addEventListener("click", () => { resetForm(); $("bannerFormPanel").hidden = false; });
