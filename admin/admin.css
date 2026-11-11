@@ -84,3 +84,16 @@ label{display:block;font-weight:700;font-size:.88rem;margin:15px 0 6px}input:not
   .dashboard-overview .stat-card { min-height: 108px; padding: 13px; }
   .dashboard-overview .stat-card strong { font-size: 1.7rem; }
 }
+
+
+/* Relatório de campanhas */
+.report-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:18px 0; }
+.report-table-wrap { width:100%; overflow-x:auto; border:1px solid var(--line); border-radius:12px; }
+.report-table { width:100%; min-width:520px; border-collapse:collapse; background:#fff; }
+.report-table th,.report-table td { padding:12px 14px; border-bottom:1px solid var(--line); text-align:left; font-size:.88rem; }
+.report-table th { color:var(--brown); background:#faf6f1; }
+.report-table th:not(:first-child),.report-table td:not(:first-child) { text-align:right; font-variant-numeric:tabular-nums; }
+.report-table tr:last-child td { border-bottom:0; }
+#campaignReportsPanel .panel-heading label { display:flex; align-items:center; gap:8px; color:var(--muted); }
+#campaignReportsPanel select { min-width:145px; }
+@media(max-width:650px) { .report-stats { grid-template-columns:1fr 1fr; } #campaignReportsPanel .panel-heading { align-items:flex-start; gap:12px; flex-direction:column; } }
