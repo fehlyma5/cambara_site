@@ -53,6 +53,24 @@ window.CAMBARA_BANNERS_READY = (async () => {
       background.style.setProperty("--banner-desktop-image", overlay + desktopLayer);
       background.style.setProperty("--banner-mobile-image", overlay + mobileLayer);
 
+      // Permite clicar na própria arte do banner quando houver destino configurado no CMS.
+      if (banner.button_url) {
+        try {
+          const targetUrl = new URL(banner.button_url, location.href);
+          if (["https:", "http:"].includes(targetUrl.protocol)) {
+            const bannerLink = document.createElement("a");
+            bannerLink.className = "slide-click-overlay";
+            bannerLink.href = targetUrl.href;
+            bannerLink.setAttribute("aria-label", "Abrir campanha: " + (banner.title || "Saiba mais"));
+            if (targetUrl.hostname !== location.hostname) {
+              bannerLink.target = "_blank";
+              bannerLink.rel = "noopener noreferrer";
+            }
+            slide.append(bannerLink);
+          }
+        } catch { /* Destino inválido: mantém o banner sem link. */ }
+      }
+
       const content = document.createElement("div");
       content.className = "container hero-content";
       if (banner.display_text === false) {
