@@ -54,13 +54,18 @@
     if(!link) return;
     let url;
     try { url=new URL(link.href,location.href); } catch { return; }
+    const slide=link.closest(".slide");
+    if(slide && link.classList.contains("slide-click-overlay")) {
+      record("banner_click",slide);
+      const isWhatsApp=url.hostname==="wa.me" || url.hostname.endsWith(".whatsapp.com");
+      if(isWhatsApp) record("whatsapp_click",slide,"WhatsApp — "+(slide.dataset.campaignLabel || "banner"));
+      return;
+    }
     const isWhatsApp=url.hostname==="wa.me" || url.hostname.endsWith(".whatsapp.com");
     if(isWhatsApp) {
-      const slide=link.closest(".slide");
       record("whatsapp_click",slide,slide ? null : "WhatsApp do site");
       return;
     }
-    const slide=link.closest(".slide");
     if(slide) record("banner_click",slide);
   },true);
   trackActive();
