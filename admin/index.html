@@ -141,6 +141,25 @@
         <div id="galleryList" class="banner-list"><p class="muted">Carregando galeria...</p></div>
       </section>
 
+      <section class="panel" id="campaignReportsPanel">
+        <div class="panel-heading">
+          <div><h2>Desempenho das campanhas</h2><p class="muted">Impressões e acionamentos registrados no site.</p></div>
+          <label>Período
+            <select id="reportPeriod"><option value="1">Hoje</option><option value="7" selected>Últimos 7 dias</option><option value="30">Últimos 30 dias</option></select>
+          </label>
+        </div>
+        <div class="stats-grid report-stats">
+          <article class="stat-card"><span>Impressões</span><strong id="reportImpressions">—</strong></article>
+          <article class="stat-card"><span>Cliques nos banners</span><strong id="reportBannerClicks">—</strong></article>
+          <article class="stat-card"><span>Cliques no WhatsApp</span><strong id="reportWhatsappClicks">—</strong></article>
+        </div>
+        <div class="report-table-wrap"><table class="report-table">
+          <thead><tr><th>Campanha / origem</th><th>Impressões</th><th>Cliques</th><th>WhatsApp</th></tr></thead>
+          <tbody id="campaignReportRows"><tr><td colspan="4">Carregando...</td></tr></tbody>
+        </table></div>
+        <p id="reportMessage" class="message" role="status"></p>
+      </section>
+
       <section class="panel" id="teamPanel">
         <div class="panel-heading"><div><h2>Equipe e acessos</h2><p class="muted">Consulte os usuários e defina quem administra ou edita o site.</p></div><button id="refreshTeamButton" class="secondary" type="button">Atualizar equipe</button></div>
         <div class="intro"><p>Para adicionar uma pessoa, primeiro crie o usuário em Supabase → Authentication → Users → Add user. O CMS criará automaticamente o perfil como editor.</p></div>
