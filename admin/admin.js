@@ -3,6 +3,7 @@
   const hasConfig = () => window.CAMBARA_SUPABASE_URL && window.CAMBARA_SUPABASE_ANON_KEY;
   let client = null;
   let currentImageUrl = "";
+  let currentMobileImageUrl = "";
 
   function setMessage(id, message) { $(id).textContent = message || ""; }
   function showDashboard(isLoggedIn) {
@@ -85,6 +86,12 @@
     $("formTitle").textContent = "Editar banner";
     $("bannerFormPanel").hidden = false;
     $("bannerFormPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function previewSelectedImage(inputId, previewId) {
+    const file=$(inputId).files[0];
+    if(!file) return;
+    const url=URL.createObjectURL(file);
+    $(previewId).innerHTML='<img src="'+url+'" alt="Prévia da imagem selecionada">';
   }
   async function saveBanner(event) {
     event.preventDefault();
