@@ -9,7 +9,7 @@ window.CAMBARA_BANNERS_READY = (async () => {
     );
     const { data, error } = await client
       .from("banners")
-      .select("title, subtitle, eyebrow, button_text, button_url, image_url, mobile_image_url, position, campaign_label, starts_at, ends_at, display_text")
+      .select("title, subtitle, eyebrow, button_text, button_url, image_url, mobile_image_url, position, campaign_label, id, starts_at, ends_at, display_text")
       .eq("active", true)
       .or("starts_at.is.null,starts_at.lte." + new Date().toISOString())
       .or("ends_at.is.null,ends_at.gte." + new Date().toISOString())
@@ -40,6 +40,8 @@ window.CAMBARA_BANNERS_READY = (async () => {
     validBanners.forEach((banner, index) => {
       const slide = document.createElement("article");
       slide.className = index === 0 ? "slide active" : "slide";
+      slide.dataset.bannerId = banner.id || "";
+      slide.dataset.campaignLabel = banner.campaign_label || banner.title || "";
 
       const background = document.createElement("div");
       background.className = "slide-bg";
