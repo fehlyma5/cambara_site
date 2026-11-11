@@ -209,6 +209,17 @@ button { font: inherit; }
   visibility: visible;
 }
 
+.slide-click-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  cursor: pointer;
+}
+.slide-click-overlay:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: -6px;
+}
 .slide-bg {
   position: absolute;
   inset: 0;
