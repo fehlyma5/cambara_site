@@ -241,6 +241,7 @@ button { font: inherit; }
 .hero-content {
   position: relative;
   z-index: 2;
+  pointer-events: none;
   min-height: 650px;
   display: flex;
   flex-direction: column;
@@ -281,7 +282,8 @@ button { font: inherit; }
   margin-bottom: 30px;
 }
 
-.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; pointer-events: auto; }
+.hero-content a, .hero-content button { pointer-events: auto; }
 
 .slider-btn {
   position: absolute;
