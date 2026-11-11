@@ -322,7 +322,7 @@
         ${item.media_type==="video" ? `<video src="${escapeHtml(item.image_url)}" muted controls playsinline></video>` : `<img src="${escapeHtml(item.image_url)}" alt="">`}
         <div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.caption || "")}</p><span class="status ${item.active ? "" : "off"}">${item.active ? "Publicada" : "Oculta"}</span><p>Posição: ${item.position}</p></div>
         <div class="item-actions"><button class="secondary" data-gallery-edit="${item.id}">Editar</button><button class="secondary" data-gallery-toggle="${item.id}" data-active="${item.active}">${item.active ? "Ocultar" : "Publicar"}</button><button class="secondary" data-gallery-delete="${item.id}">Excluir</button></div>
-      </article>`).join(""););
+      </article>`).join("");
   }
   async function editGalleryPhoto(id) {
     const {data,error}=await client.from("gallery_photos").select("*").eq("id",id).single();
