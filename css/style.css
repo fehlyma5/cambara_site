@@ -959,3 +959,10 @@ button { font: inherit; }
     margin-bottom: 34px;
   }
 }
+
+/* Galeria de clientes: fotos e depoimentos em vídeo */
+.gallery-video-card video { display:block; width:100%; height:340px; object-fit:contain; background:#160e09; }
+.gallery-video-card figcaption { min-height:74px; }
+#galleryImagePreview video, #galleryList video { display:block; width:100%; max-width:180px; max-height:240px; object-fit:contain; background:#160e09; border-radius:10px; }
+@media (max-width:760px) { .gallery-video-card video { height:300px; } }
+@media (max-width:460px) { .gallery-video-card video { height:360px; } }
