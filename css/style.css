@@ -212,6 +212,7 @@ button { font: inherit; }
 .slide-bg {
   position: absolute;
   inset: 0;
+  background-image: var(--banner-overlay, linear-gradient(90deg, rgba(17,12,8,.82), rgba(17,12,8,.30))) var(--banner-desktop, none);
   background-size: cover;
   background-position: center;
   transform: scale(1.03);
@@ -688,6 +689,7 @@ button { font: inherit; }
 }
 
 @media (max-width: 600px) {
+  .slide-bg { background-image: var(--banner-overlay, linear-gradient(90deg, rgba(17,12,8,.55), rgba(17,12,8,.20))) var(--banner-mobile, var(--banner-desktop, none)); background-position: center center; }
   .container { width: min(100% - 28px, 1160px); }
 
   .topbar { display: none; }
