@@ -51,3 +51,19 @@ window.CAMBARA_CATEGORIES_READY = (async () => {
     grid.addEventListener("focusout",event=>{if(!grid.contains(event.relatedTarget))grid.classList.remove("is-paused");});
   } catch(error) { console.warn("Cambará CMS: mantendo categorias locais.",error); }
 })();
+
+// Mantém o orçamento por WhatsApp nas categorias criadas dinamicamente pelo CMS.
+document.addEventListener("click", event => {
+  const card = event.target.closest(".category-card");
+  if (!card) return;
+  event.preventDefault();
+  const phone = window.CAMBARA_WHATSAPP_PHONE;
+  if (!phone) {
+    console.warn("Cambará: número oficial do WhatsApp ainda não foi carregado.");
+    return;
+  }
+  const category = card.dataset.category || "materiais de construção";
+  const message = "Olá! Gostaria de fazer um orçamento de materiais de " + category + " na Cambará.";
+  const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+  window.open(url, "_blank", "noopener,noreferrer");
+});
