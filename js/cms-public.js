@@ -9,7 +9,7 @@ window.CAMBARA_BANNERS_READY = (async () => {
     );
     const { data, error } = await client
       .from("banners")
-      .select("title, subtitle, eyebrow, button_text, button_url, image_url, position, campaign_label, starts_at, ends_at, display_text")
+      .select("title, subtitle, eyebrow, button_text, button_url, image_url, mobile_image_url, position, campaign_label, starts_at, ends_at, display_text")
       .eq("active", true)
       .or("starts_at.is.null,starts_at.lte." + new Date().toISOString())
       .or("ends_at.is.null,ends_at.gte." + new Date().toISOString())
@@ -43,10 +43,11 @@ window.CAMBARA_BANNERS_READY = (async () => {
 
       const background = document.createElement("div");
       background.className = "slide-bg";
-      background.style.backgroundImage = banner.display_text === false
-        ? "url(" + JSON.stringify(banner.image_url) + ")"
-        : "linear-gradient(90deg, rgba(17,12,8,.82), rgba(17,12,8,.30)), url(" +
-          JSON.stringify(banner.image_url) + ")";
+      background.style.setProperty("--banner-desktop", "url(" + JSON.stringify(banner.image_url) + ")");
+      background.style.setProperty("--banner-mobile", "url(" + JSON.stringify(banner.mobile_image_url || banner.image_url) + ")");
+      background.style.setProperty("--banner-overlay", banner.display_text === false
+        ? ""
+        : "linear-gradient(90deg, rgba(17,12,8,.82), rgba(17,12,8,.30)), ");
 
       const content = document.createElement("div");
       content.className = "container hero-content";
