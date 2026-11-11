@@ -53,23 +53,22 @@ window.CAMBARA_BANNERS_READY = (async () => {
       background.style.setProperty("--banner-desktop-image", overlay + desktopLayer);
       background.style.setProperty("--banner-mobile-image", overlay + mobileLayer);
 
-      // Permite clicar na própria arte do banner quando houver destino configurado no CMS.
+      // Toda a arte é clicável: usa o link da campanha ou, por padrão, o WhatsApp oficial.
+      const bannerLink = document.createElement("a");
+      bannerLink.className = "slide-click-overlay";
+      bannerLink.setAttribute("aria-label", "Abrir campanha: " + (banner.title || "Fale com a Cambará"));
+      const defaultWhatsapp = document.querySelector('a[href*="wa.me/"]')?.href || "#";
+      let destination = defaultWhatsapp;
       if (banner.button_url) {
         try {
           const targetUrl = new URL(banner.button_url, location.href);
-          if (["https:", "http:"].includes(targetUrl.protocol)) {
-            const bannerLink = document.createElement("a");
-            bannerLink.className = "slide-click-overlay";
-            bannerLink.href = targetUrl.href;
-            bannerLink.setAttribute("aria-label", "Abrir campanha: " + (banner.title || "Saiba mais"));
-            if (targetUrl.hostname !== location.hostname) {
-              bannerLink.target = "_blank";
-              bannerLink.rel = "noopener noreferrer";
-            }
-            slide.append(bannerLink);
-          }
-        } catch { /* Destino inválido: mantém o banner sem link. */ }
+          if (["https:", "http:"].includes(targetUrl.protocol)) destination = targetUrl.href;
+        } catch { /* Usa o WhatsApp oficial quando o link da campanha for inválido. */ }
       }
+      bannerLink.href = destination;
+      bannerLink.target = "_blank";
+      bannerLink.rel = "noopener noreferrer";
+      slide.append(bannerLink);
 
       const content = document.createElement("div");
       content.className = "container hero-content";
