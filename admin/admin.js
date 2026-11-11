@@ -500,6 +500,42 @@
     const { data } = await client.auth.getSession();
     if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats(); await loadCampaignReport(); }
   }
+  $("loginForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!client) return;
+    setMessage("loginMessage", "Entrando...");
+    const { error } = await client.auth.signInWithPassword({
+      email: $("email").value.trim(),
+      password: $("password").value
+    });
+    if (error) return setMessage("loginMessage", error.message);
+    showDashboard(true);
+    setMessage("loginMessage", "");
+    await loadBanners();
+    await loadCategories();
+    await loadSettings();
+    await loadGallery();
+    await loadTeam();
+    await loadDashboardStats();
+    await loadCampaignReport();
+  });
+  $("logoutButton").addEventListener("click", async () => {
+    await client.auth.signOut();
+    showDashboard(false);
+  });
+  $("newBannerButton").addEventListener("click", () => {
+    resetForm();
+    $("bannerFormPanel").hidden = false;
+  });
+  $("cancelEditButton").addEventListener("click", resetForm);
+  $("cancelFormButton").addEventListener("click", resetForm);
+  $("bannerForm").addEventListener("submit", saveBanner);
+  $("bannerList").addEventListener("click", handleListClick);
+  $("refreshButton").addEventListener("click", loadBanners);
+  $("imageFile").addEventListener("change", event => {
+    const file = event.target.files[0];
+    if (file) $("imagePreview").innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Prévia da imagem selecionada">`;
+  });
   $("reportPeriod").addEventListener("change",loadCampaignReport);
   $("refreshTeamButton").addEventListener("click",loadTeam);
   $("teamList").addEventListener("click",handleTeamClick);
