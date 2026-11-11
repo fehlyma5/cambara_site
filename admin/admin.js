@@ -98,8 +98,11 @@
     setMessage("formMessage", "Salvando...");
     try {
       const file = $("imageFile").files[0];
+      const mobileFile = $("mobileImageFile").files[0];
       let imageUrl = currentImageUrl;
+      let mobileImageUrl = currentMobileImageUrl;
       if (file) imageUrl = await uploadImage(file);
+      if (mobileFile) mobileImageUrl = await uploadImage(mobileFile);
       if (!imageUrl) throw new Error("Selecione uma imagem para o banner.");
       const startValue = $("startsAt").value;
       const endValue = $("endsAt").value;
@@ -117,6 +120,7 @@
         button_text: $("buttonText").value.trim(),
         button_url: $("buttonUrl").value.trim(),
         image_url: imageUrl,
+        mobile_image_url: mobileImageUrl || null,
         position: Number($("position").value),
         active: $("active").checked,
         updated_at: new Date().toISOString()
