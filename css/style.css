@@ -1002,3 +1002,98 @@ button { font: inherit; }
   .testimonial-card video { max-height:560px; }
   .gallery-photos-heading { margin-top:52px; }
 }
+
+/* Galeria de fotos integrada à seção Sobre a Cambará */
+.about-gallery { margin-top: 72px; }
+.about-gallery .gallery-photos-heading { margin: 0 0 28px; }
+.about-gallery .gallery-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* Depoimento apresentado dentro de uma moldura de televisão */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 620px);
+  justify-content: center;
+  gap: 30px;
+}
+.testimonial-card {
+  overflow: visible;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.testimonial-tv {
+  position: relative;
+  width: 100%;
+  padding: 15px 16px 28px;
+  border-radius: 28px;
+  background: linear-gradient(145deg, #6b3b1c 0%, #2b180e 48%, #120b07 100%);
+  border: 3px solid #a9632b;
+  box-shadow: 0 18px 34px rgba(42,25,15,.24), inset 0 2px 4px rgba(255,255,255,.25);
+}
+.testimonial-tv::before {
+  content: "";
+  position: absolute;
+  width: 18%;
+  height: 17px;
+  left: 41%;
+  bottom: -19px;
+  background: linear-gradient(90deg,#321b0e,#75431f,#321b0e);
+  clip-path: polygon(18% 0,82% 0,100% 100%,0 100%);
+}
+.testimonial-tv::after {
+  content: "";
+  position: absolute;
+  width: 32%;
+  height: 11px;
+  left: 34%;
+  bottom: -28px;
+  border-radius: 0 0 12px 12px;
+  background: linear-gradient(180deg,#75431f,#2b180e);
+  box-shadow: 0 5px 8px rgba(0,0,0,.18);
+}
+.testimonial-tv-screen {
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 5px solid #100b08;
+  border-radius: 13px;
+  background: #080605;
+  box-shadow: inset 0 0 18px rgba(0,0,0,.8);
+}
+.testimonial-tv-screen video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #080605;
+}
+.testimonial-tv-brand {
+  display: block;
+  margin-top: 8px;
+  color: #f5c18e;
+  font-size: .58rem;
+  font-weight: 900;
+  letter-spacing: .22em;
+  text-align: right;
+}
+.testimonial-card figcaption { padding: 24px 8px 8px; text-align: center; }
+.testimonial-card figcaption strong { color: var(--brown-900); }
+.testimonial-card figcaption p { color: var(--muted); font-size: .9rem; margin-top: 5px; }
+.gallery-photos-heading { text-align: center; margin: 76px 0 28px; }
+.gallery-photos-heading h2 { color: var(--brown-900); margin: 10px 0; }
+.gallery-photos-heading h2 span { color: var(--orange-600, #f58220); }
+.gallery-photos-heading p { color: var(--muted); }
+@media (max-width:760px) {
+  .about-gallery { margin-top: 48px; }
+  .about-gallery .gallery-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .testimonials-grid { grid-template-columns: minmax(0,1fr); max-width:560px; margin:0 auto; }
+  .testimonial-tv { padding: 10px 11px 22px; border-radius: 21px; }
+  .testimonial-tv-screen { border-width: 4px; border-radius: 9px; }
+  .testimonial-tv-brand { font-size:.5rem; }
+}
+@media (max-width:460px) {
+  .about-gallery .gallery-grid { grid-template-columns:1fr; }
+  .testimonial-tv { padding: 8px 9px 19px; }
+}
