@@ -1097,3 +1097,41 @@ button { font: inherit; }
   .about-gallery .gallery-grid { grid-template-columns:1fr; }
   .testimonial-tv { padding: 8px 9px 19px; }
 }
+
+/* Faixa horizontal de fotos integrada ao Sobre a Cambará */
+.about-gallery { margin-top: 48px; }
+.gallery-strip {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 4px 18px;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--wood) rgba(120,75,35,.12);
+}
+.gallery-strip .gallery-card {
+  flex: 0 0 clamp(250px, 30vw, 350px);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+.gallery-strip .gallery-card img {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+.gallery-strip .gallery-empty {
+  flex: 0 0 100%;
+}
+@media (max-width:760px) {
+  .about-gallery { margin-top: 32px; }
+  .gallery-strip { gap: 14px; padding-bottom: 14px; }
+  .gallery-strip .gallery-card { flex-basis: min(78vw, 330px); }
+  .gallery-strip .gallery-card img { height: 205px; }
+}
+@media (max-width:460px) {
+  .gallery-strip .gallery-card { flex-basis: 84vw; }
+}
