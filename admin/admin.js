@@ -299,90 +299,149 @@
 
   let currentGalleryImageUrl = "";
   let currentGalleryMediaType = "image";
-  function resetGalleryForm() {
+  function setGalleryMode(type) {
+    currentGalleryMediaType = type;
+    $("galleryMediaType").value = type;
+    const isVideo = type === "video";
+    $("galleryFormTitle").textContent = isVideo ? "Adicionar depoimento em vídeo" : "Adicionar fotografia";
+    $("galleryFormHint").textContent = isVideo
+      ? "Este vídeo será exibido na seção Vozes da Cambará, dentro de uma televisão."
+      : "Esta fotografia será exibida junto à seção Sobre a Cambará.";
+    $("galleryTitleLabel").textContent = isVideo ? "Identificação do depoimento" : "Título da fotografia";
+    $("galleryTitle").placeholder = isVideo ? "Ex.: Depoimento — Cliente Lena" : "Ex.: Fachada da loja";
+    $("galleryFileLabel").textContent = isVideo ? "Selecione o vídeo do cliente" : "Selecione a fotografia";
+    $("galleryImage").accept = isVideo ? "video/mp4,video/webm" : "image/jpeg,image/png,image/webp";
+    $("galleryImage").required = !Boolean($("galleryId").value && currentGalleryImageUrl);
+    $("galleryFileHelp").textContent = isVideo
+      ? "Formatos aceitos: MP4 ou WebM. Tamanho máximo: 25 MB. Prefira vídeos de até 15 segundos."
+      : "Formatos aceitos: JPG, PNG ou WebP. Tamanho máximo: 2 MB.";
+    $("gallerySaveButton").textContent = isVideo ? "Publicar vídeo" : "Publicar fotografia";
+    $("galleryActiveLabel").lastChild.textContent = isVideo ? " Publicar este depoimento no site" : " Publicar esta fotografia no site";
+  }
+  function resetGalleryForm(type = "image") {
     $("galleryForm").reset();
-    $("galleryId").value="";
-    $("galleryPosition").value="1";
-    $("galleryActive").checked=true;
-    $("galleryImage").value="";
-    $("galleryImagePreview").innerHTML="";
-    currentGalleryImageUrl="";
-    currentGalleryMediaType="image";
-    $("galleryFormTitle").textContent="Adicionar conteúdo";
-    $("galleryFormPanel").hidden=true;
-    setMessage("galleryFormMessage","");
+    $("galleryId").value = "";
+    $("galleryPosition").value = "1";
+    $("galleryActive").checked = true;
+    $("galleryImage").value = "";
+    $("galleryImagePreview").innerHTML = "";
+    currentGalleryImageUrl = "";
+    $("galleryFormPanel").hidden = false;
+    setMessage("galleryFormMessage", "");
+    setGalleryMode(type);
   }
   async function loadGallery() {
-    $("galleryList").innerHTML='<p class="muted">Carregando...</p>';
+    const photoList = $("photoGalleryList");
+    const videoList = $("videoGalleryList");
+    photoList.innerHTML = '<p class="muted">Carregando fotografias...</p>';
+    videoList.innerHTML = '<p class="muted">Carregando depoimentos...</p>';
     const {data,error}=await client.from("gallery_photos").select("*").order("position",{ascending:true});
-    if(error) { $("galleryList").innerHTML=""; return setMessage("dashboardMessage","Erro ao carregar galeria: "+error.message); }
-    if(!data.length) { $("galleryList").innerHTML='<p class="muted">Nenhuma foto cadastrada.</p>'; return; }
-    $("galleryList").innerHTML=data.map(item=>`
-      <article class="banner-item">
-        ${item.media_type==="video" ? `<video src="${escapeHtml(item.image_url)}" muted controls playsinline></video>` : `<img src="${escapeHtml(item.image_url)}" alt="">`}
-        <div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.caption || "")}</p><span class="status ${item.active ? "" : "off"}">${item.active ? "Publicada" : "Oculta"}</span><p>Posição: ${item.position}</p></div>
-        <div class="item-actions"><button class="secondary" data-gallery-edit="${item.id}">Editar</button><button class="secondary" data-gallery-toggle="${item.id}" data-active="${item.active}">${item.active ? "Ocultar" : "Publicar"}</button><button class="secondary" data-gallery-delete="${item.id}">Excluir</button></div>
-      </article>`).join("");
+    if(error) {
+      photoList.innerHTML = videoList.innerHTML = "";
+      return setMessage("dashboardMessage","Erro ao carregar conteúdos: "+error.message);
+    }
+    const photos=(data||[]).filter(item=>item.media_type!=="video");
+    const videos=(data||[]).filter(item=>item.media_type==="video");
+    const renderItems=(items,type)=> {
+      if(!items.length) return '<p class="muted empty-content">'+(type==="video"?"Nenhum depoimento cadastrado ainda.":"Nenhuma fotografia cadastrada ainda.")+'</p>';
+      return items.map(item=>`
+        <article class="banner-item content-item">
+          ${type==="video"
+            ? `<video class="gallery-item-media" src="${escapeHtml(item.image_url)}" muted controls playsinline preload="metadata"></video>`
+            : `<img class="gallery-item-media" src="${escapeHtml(item.image_url)}" alt="">`}
+          <div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.caption||"")}</p><span class="status ${item.active?"":"off"}">${item.active?"Publicado":"Oculto"}</span><p>Posição: ${item.position}</p></div>
+          <div class="item-actions">
+            <button class="secondary" data-gallery-edit="${item.id}" type="button">Editar</button>
+            <button class="secondary" data-gallery-toggle="${item.id}" data-active="${item.active}" type="button">${item.active?"Ocultar":"Publicar"}</button>
+            <button class="secondary" data-gallery-delete="${item.id}" type="button">Excluir</button>
+          </div>
+        </article>`).join("");
+    };
+    photoList.innerHTML=renderItems(photos,"image");
+    videoList.innerHTML=renderItems(videos,"video");
   }
   async function editGalleryPhoto(id) {
     const {data,error}=await client.from("gallery_photos").select("*").eq("id",id).single();
     if(error) return setMessage("dashboardMessage",error.message);
     $("galleryId").value=data.id;
-    $("galleryTitle").value=data.title || "";
-    $("galleryCaption").value=data.caption || "";
-    $("galleryPosition").value=data.position || 1;
+    $("galleryTitle").value=data.title||"";
+    $("galleryCaption").value=data.caption||"";
+    $("galleryPosition").value=data.position||1;
     $("galleryActive").checked=!!data.active;
-    currentGalleryImageUrl=data.image_url || "";
-    currentGalleryMediaType=data.media_type || "image";
-    $("galleryImagePreview").innerHTML=currentGalleryImageUrl ? (currentGalleryMediaType==="video" ? "<video src=\"" + escapeHtml(currentGalleryImageUrl) + "\" controls playsinline></video>" : "<img src=\"" + escapeHtml(currentGalleryImageUrl) + "\" alt=\"Imagem atual\">") : "";
-    $("galleryFormTitle").textContent="Editar conteúdo";
+    currentGalleryImageUrl=data.image_url||"";
+    currentGalleryMediaType=data.media_type||"image";
+    $("galleryImagePreview").innerHTML=currentGalleryImageUrl
+      ? (currentGalleryMediaType==="video"
+        ? "<video src=\""+escapeHtml(currentGalleryImageUrl)+"\" controls playsinline></video>"
+        : "<img src=\""+escapeHtml(currentGalleryImageUrl)+"\" alt=\"Fotografia atual\">")
+      : "";
     $("galleryFormPanel").hidden=false;
+    setGalleryMode(currentGalleryMediaType);
+    $("galleryImage").required=false;
     $("galleryFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
   }
   async function saveGalleryPhoto(event) {
     event.preventDefault();
-    setMessage("galleryFormMessage","Salvando foto...");
+    setMessage("galleryFormMessage","Enviando e salvando conteúdo...");
     try {
+      const type=$("galleryMediaType").value;
       const file=$("galleryImage").files[0];
       let imageUrl=currentGalleryImageUrl;
-      let mediaType=currentGalleryMediaType;
       if(file) {
-        const allowedImage=["image/jpeg","image/png","image/webp"].includes(file.type);
-        const allowedVideo=["video/mp4","video/webm"].includes(file.type);
-        if(!allowedImage && !allowedVideo) throw new Error("Use imagem JPG, PNG, WebP ou vídeo MP4/WebM.");
-        const limit=allowedVideo ? 25*1024*1024 : 2*1024*1024;
-        if(file.size>limit) throw new Error(allowedVideo ? "O vídeo deve ter até 25 MB." : "A imagem deve ter até 2 MB.");
-        mediaType=allowedVideo ? "video" : "image";
+        const validImage=["image/jpeg","image/png","image/webp"].includes(file.type);
+        const validVideo=["video/mp4","video/webm"].includes(file.type);
+        if(type==="image"&&!validImage) throw new Error("Nesta área, selecione uma fotografia JPG, PNG ou WebP.");
+        if(type==="video"&&!validVideo) throw new Error("Nesta área, selecione um vídeo MP4 ou WebM.");
+        const limit=type==="video"?25*1024*1024:2*1024*1024;
+        if(file.size>limit) throw new Error(type==="video"?"O vídeo deve ter até 25 MB.":"A fotografia deve ter até 2 MB.");
         const ext=file.name.split(".").pop().toLowerCase();
-        const path="gallery/"+crypto.randomUUID()+"."+ext;
+        const path="gallery/"+(type==="video"?"videos/":"photos/")+crypto.randomUUID()+"."+ext;
         const {error:uploadError}=await client.storage.from("site-images").upload(path,file,{upsert:false,contentType:file.type});
         if(uploadError) throw uploadError;
         imageUrl=client.storage.from("site-images").getPublicUrl(path).data.publicUrl;
       }
-      if(!imageUrl) throw new Error("Selecione uma imagem ou vídeo.");
-      const payload={title:$("galleryTitle").value.trim(),caption:$("galleryCaption").value.trim() || null,image_url:imageUrl,media_type:mediaType,position:Number($("galleryPosition").value),active:$("galleryActive").checked,updated_at:new Date().toISOString()};
+      if(!imageUrl) throw new Error(type==="video"?"Selecione o vídeo do depoimento.":"Selecione a fotografia.");
+      const payload={
+        title:$("galleryTitle").value.trim(),
+        caption:$("galleryCaption").value.trim()||null,
+        image_url:imageUrl,
+        media_type:type,
+        position:Number($("galleryPosition").value),
+        active:$("galleryActive").checked,
+        updated_at:new Date().toISOString()
+      };
       const id=$("galleryId").value;
-      const query=id ? client.from("gallery_photos").update(payload).eq("id",id) : client.from("gallery_photos").insert(payload);
+      const query=id?client.from("gallery_photos").update(payload).eq("id",id):client.from("gallery_photos").insert(payload);
       const {error}=await query;
       if(error) throw error;
-      resetGalleryForm();
-      setMessage("dashboardMessage","Foto salva com sucesso.");
+      $("galleryForm").reset();
+      $("galleryId").value="";
+      $("galleryImagePreview").innerHTML="";
+      currentGalleryImageUrl="";
+      $("galleryFormPanel").hidden=true;
+      setMessage("dashboardMessage",type==="video"?"Depoimento publicado com sucesso.":"Fotografia publicada com sucesso.");
       await loadGallery();
-    } catch(error) { setMessage("galleryFormMessage",error.message || "Erro ao salvar foto."); }
+      await loadDashboardStats();
+    } catch(error) {
+      setMessage("galleryFormMessage",error.message||"Não foi possível publicar o conteúdo.");
+    }
   }
   async function handleGalleryClick(event) {
-    const editId=event.target.dataset.galleryEdit;
-    const toggleId=event.target.dataset.galleryToggle;
-    const deleteId=event.target.dataset.galleryDelete;
+    const target=event.target.closest("button");
+    if(!target) return;
+    const editId=target.dataset.galleryEdit;
+    const toggleId=target.dataset.galleryToggle;
+    const deleteId=target.dataset.galleryDelete;
     if(editId) return editGalleryPhoto(editId);
     if(toggleId) {
-      const active=event.target.dataset.active==="true";
+      const active=target.dataset.active==="true";
       const {error}=await client.from("gallery_photos").update({active:!active,updated_at:new Date().toISOString()}).eq("id",toggleId);
-      if(error) setMessage("dashboardMessage",error.message); else await loadGallery();
+      if(error) setMessage("dashboardMessage",error.message); else {await loadGallery();await loadDashboardStats();}
     }
-    if(deleteId && confirm("Excluir esta foto da galeria?")) {
+    if(deleteId&&confirm("Excluir este conteúdo? Esta ação não pode ser desfeita.")) {
       const {error}=await client.from("gallery_photos").delete().eq("id",deleteId);
-      if(error) setMessage("dashboardMessage",error.message); else {setMessage("dashboardMessage","Foto excluída.");await loadGallery();}
+      if(error) setMessage("dashboardMessage",error.message);
+      else {setMessage("dashboardMessage","Conteúdo excluído.");await loadGallery();await loadDashboardStats();}
     }
   }
 
@@ -540,14 +599,18 @@
   $("refreshTeamButton").addEventListener("click",loadTeam);
   $("teamList").addEventListener("click",handleTeamClick);
   $("galleryForm").addEventListener("submit",saveGalleryPhoto);
-  $("newPhotoButton").addEventListener("click",()=>{resetGalleryForm();$("galleryFormPanel").hidden=false;});
-  $("cancelGalleryButton").addEventListener("click",resetGalleryForm);
-  $("galleryList").addEventListener("click",handleGalleryClick);
+  $("newPhotoButton").addEventListener("click",()=>{resetGalleryForm("image");$("galleryFormPanel").scrollIntoView({behavior:"smooth",block:"start"});});
+  $("newVideoButton").addEventListener("click",()=>{resetGalleryForm("video");$("galleryFormPanel").scrollIntoView({behavior:"smooth",block:"start"});});
+  $("cancelGalleryButton").addEventListener("click",()=>{$("galleryFormPanel").hidden=true;});
+  $("photoGalleryList").addEventListener("click",handleGalleryClick);
+  $("videoGalleryList").addEventListener("click",handleGalleryClick);
   $("galleryImage").addEventListener("change", event => {
     const file=event.target.files[0];
     if(!file) return;
     const url=URL.createObjectURL(file);
-    $("galleryImagePreview").innerHTML=file.type.startsWith("video/") ? "<video src=\"" + url + "\" controls playsinline></video>" : "<img src=\"" + url + "\" alt=\"Prévia da imagem\">";
+    $("galleryImagePreview").innerHTML=file.type.startsWith("video/")
+      ? "<video src=\\"+url+"\\" controls playsinline></video>"
+      : "<img src=\\"+url+"\\" alt=\\"Prévia da fotografia\\">";
   });
   init();
 })();
