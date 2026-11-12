@@ -609,8 +609,8 @@
     if(!file) return;
     const url=URL.createObjectURL(file);
     $("galleryImagePreview").innerHTML=file.type.startsWith("video/")
-      ? "<video src=\\"+url+"\\" controls playsinline></video>"
-      : "<img src=\\"+url+"\\" alt=\\"Prévia da fotografia\\">";
+      ? `<video src="${url}" controls playsinline></video>`
+      : `<img src="${url}" alt="Prévia da fotografia">`;
   });
   init();
 })();
