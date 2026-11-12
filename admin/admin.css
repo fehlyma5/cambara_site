@@ -97,3 +97,22 @@ label{display:block;font-weight:700;font-size:.88rem;margin:15px 0 6px}input:not
 #campaignReportsPanel .panel-heading label { display:flex; align-items:center; gap:8px; color:var(--muted); }
 #campaignReportsPanel select { min-width:145px; }
 @media(max-width:650px) { .report-stats { grid-template-columns:1fr 1fr; } #campaignReportsPanel .panel-heading { align-items:flex-start; gap:12px; flex-direction:column; } }
+
+/* CMS: separação clara entre fotografias e depoimentos */
+.content-manager-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.content-manager-card { min-width:0; border:1px solid var(--line); border-radius:14px; padding:18px; background:#fffdfb; }
+.content-manager-card h3 { margin:0 0 6px; color:var(--brown); font-size:1.05rem; }
+.content-manager-card p { margin:0 0 14px; color:var(--muted); font-size:.86rem; min-height:3.9em; }
+.content-manager-icon { width:42px;height:42px;border-radius:12px;display:grid;place-items:center;margin-bottom:12px;font-size:1.35rem;font-weight:900; }
+.photo-icon { background:#f6eadc;color:#9a551d; }
+.video-icon { background:#f2e8e2;color:#61351f; }
+.content-list { margin-top:16px; }
+.content-item { grid-template-columns:110px minmax(0,1fr); }
+.content-item .gallery-item-media { width:110px;height:82px;object-fit:cover;border-radius:8px;background:#160e09; }
+.content-item video.gallery-item-media { object-fit:contain; }
+.content-item .item-actions { grid-column:1/-1; }
+.content-editor { margin:22px 0 4px;padding:20px;border:1px solid var(--line);border-radius:14px;background:#fffaf5; }
+.content-editor h3 { margin:0 0 4px; }
+.empty-content { padding:12px;border:1px dashed var(--line);border-radius:10px;font-size:.85rem; }
+@media(max-width:800px) { .content-manager-grid { grid-template-columns:1fr; } .content-manager-card p { min-height:0; } }
+@media(max-width:480px) { .content-item { grid-template-columns:86px minmax(0,1fr);gap:10px; } .content-item .gallery-item-media { width:86px;height:72px; } .content-editor { padding:14px; } }
