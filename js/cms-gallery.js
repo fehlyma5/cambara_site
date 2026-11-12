@@ -19,10 +19,15 @@ window.CAMBARA_GALLERY_READY = (async () => {
     const videoFragment = document.createDocumentFragment();
     videos.forEach(item => {
       const figure = document.createElement("figure"); figure.className = "testimonial-card";
+      const tv = document.createElement("div"); tv.className = "testimonial-tv";
+      const screen = document.createElement("div"); screen.className = "testimonial-tv-screen";
       const video = document.createElement("video");
       video.src = item.image_url; video.controls = true; video.playsInline = true; video.preload = "metadata";
       video.setAttribute("aria-label", item.title || "Depoimento em vídeo da Cambará");
-      figure.append(video, makeCaption(item)); videoFragment.append(figure);
+      screen.append(video); tv.append(screen);
+      const brand = document.createElement("span"); brand.className = "testimonial-tv-brand"; brand.textContent = "CAMBARÁ";
+      tv.append(brand);
+      figure.append(tv, makeCaption(item)); videoFragment.append(figure);
     });
     videoGrid.replaceChildren(videoFragment);
     if (!videos.length) videoGrid.innerHTML = '<p class="gallery-empty">Em breve, novos depoimentos de clientes.</p>';
