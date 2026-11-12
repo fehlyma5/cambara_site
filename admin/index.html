@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="admin.css?v=campaign-report-1">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
-  <script src="admin.js?v=testimonials-3" defer></script>
+  <script src="admin.js?v=split-content-1" defer></script>
 </head>
 <body>
   <main class="shell">
@@ -122,23 +122,39 @@
       </section>
 
       <section class="panel" id="galleryPanel">
-        <div class="panel-heading"><div><h2>Galeria institucional</h2><p class="muted">Publique fotos institucionais e vídeos curtos de clientes. Prefira vídeos verticais de até 15 segundos.</p></div><button id="newPhotoButton" class="primary" type="button">+ Adicionar conteúdo</button></div>
-        <section id="galleryFormPanel" hidden>
-          <h3 id="galleryFormTitle">Adicionar conteúdo</h3>
+        <div class="panel-heading"><div><h2>Conteúdos do site</h2><p class="muted">Escolha o tipo de conteúdo antes de publicar. Cada área aparece em um lugar diferente no site.</p></div></div>
+        <div class="content-manager-grid">
+          <section class="content-manager-card">
+            <div class="content-manager-icon photo-icon" aria-hidden="true">▧</div>
+            <h3>Galeria institucional — fotos</h3>
+            <p>Fachada, equipe, loja, produtos, eventos e bastidores. As fotografias aparecem junto à seção “Sobre a Cambará”.</p>
+            <button id="newPhotoButton" class="primary" type="button">+ Adicionar fotografia</button>
+            <div id="photoGalleryList" class="banner-list content-list"><p class="muted">Carregando fotografias...</p></div>
+          </section>
+          <section class="content-manager-card">
+            <div class="content-manager-icon video-icon" aria-hidden="true">▶</div>
+            <h3>Depoimentos — vídeos</h3>
+            <p>Depoimentos curtos de clientes. Os vídeos aparecem na seção “Vozes da Cambará”, dentro das televisões. Recomendado: até 15 segundos.</p>
+            <button id="newVideoButton" class="primary" type="button">+ Adicionar vídeo de cliente</button>
+            <div id="videoGalleryList" class="banner-list content-list"><p class="muted">Carregando depoimentos...</p></div>
+          </section>
+        </div>
+        <section id="galleryFormPanel" class="content-editor" hidden>
+          <div class="panel-heading"><div><h3 id="galleryFormTitle">Adicionar fotografia</h3><p id="galleryFormHint" class="muted">Este conteúdo será exibido na galeria institucional.</p></div></div>
           <form id="galleryForm">
             <input id="galleryId" type="hidden">
+            <input id="galleryMediaType" type="hidden" value="image">
             <div class="form-grid">
-              <div class="field"><label for="galleryTitle">Título / identificação</label><input id="galleryTitle" maxlength="100" required placeholder="Ex.: Fachada da loja"></div>
+              <div class="field full"><label id="galleryTitleLabel" for="galleryTitle">Título da fotografia</label><input id="galleryTitle" maxlength="100" required placeholder="Ex.: Fachada da loja"></div>
               <div class="field"><label for="galleryPosition">Ordem de exibição</label><input id="galleryPosition" type="number" min="1" value="1" required></div>
-              <div class="field full"><label for="galleryCaption">Legenda (opcional)</label><textarea id="galleryCaption" rows="2" maxlength="240" placeholder="Conte um pouco sobre esta imagem"></textarea></div>
-              <div class="field full"><label for="galleryImage">Imagem ou vídeo</label><input id="galleryImage" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm"><small>Imagens: até 2 MB. Vídeos MP4/WebM: até 25 MB; prefira vídeos verticais de até 15 segundos.</small><div id="galleryImagePreview" class="preview"></div></div>
-              <label class="switch-field"><input id="galleryActive" type="checkbox" checked> Foto visível na galeria pública</label>
+              <div class="field full"><label for="galleryCaption">Legenda (opcional)</label><textarea id="galleryCaption" rows="2" maxlength="240" placeholder="Ex.: Fachada da loja, vista de cima"></textarea></div>
+              <div class="field full"><label id="galleryFileLabel" for="galleryImage">Selecione a fotografia</label><input id="galleryImage" type="file" accept="image/jpeg,image/png,image/webp"><small id="galleryFileHelp">Formatos aceitos: JPG, PNG ou WebP. Tamanho máximo: 2 MB.</small><div id="galleryImagePreview" class="preview"></div></div>
+              <label id="galleryActiveLabel" class="switch-field"><input id="galleryActive" type="checkbox" checked> Publicar esta fotografia no site</label>
             </div>
-            <div class="actions"><button class="primary" type="submit">Salvar foto</button><button class="secondary" id="cancelGalleryButton" type="button">Cancelar</button></div>
+            <div class="actions"><button id="gallerySaveButton" class="primary" type="submit">Publicar fotografia</button><button class="secondary" id="cancelGalleryButton" type="button">Cancelar</button></div>
             <p id="galleryFormMessage" class="message" role="status"></p>
           </form>
         </section>
-        <div id="galleryList" class="banner-list"><p class="muted">Carregando galeria...</p></div>
       </section>
 
       <section class="panel" id="campaignReportsPanel">
