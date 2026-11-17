@@ -1,0 +1,83 @@
+/* Navegação e lightbox das fotografias institucionais — independente do CMS */
+.about-gallery .cambara-photo-carousel { position: relative; }
+.about-gallery .gallery-strip { scroll-padding-inline: 4px; }
+.cambara-gallery-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255,255,255,.75);
+  border-radius: 50%;
+  background: rgba(48,28,15,.88);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(0,0,0,.22);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+.cambara-gallery-arrow:hover:not(:disabled) { background: #f58220; color: #211207; }
+.cambara-gallery-arrow:focus-visible,
+.gallery-strip .gallery-card img:focus-visible,
+.cambara-lightbox button:focus-visible { outline: 3px solid #f58220; outline-offset: 3px; }
+.cambara-gallery-arrow:disabled { opacity: .3; cursor: default; }
+.cambara-gallery-arrow--prev { left: 10px; }
+.cambara-gallery-arrow--next { right: 10px; }
+.gallery-strip .gallery-card img { cursor: zoom-in; }
+.cambara-lightbox {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(96vw, 1160px);
+  max-width: none;
+  max-height: min(94dvh, 1000px);
+  padding: 54px 60px 24px;
+  border: 0;
+  border-radius: 18px;
+  background: #1c120d;
+  color: #fff;
+  box-shadow: 0 22px 80px rgba(0,0,0,.55);
+}
+.cambara-lightbox::backdrop { background: rgba(0,0,0,.88); }
+.cambara-lightbox__image {
+  display: block;
+  max-width: 100%;
+  max-height: calc(94dvh - 180px);
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+}
+.cambara-lightbox__caption { margin: 18px auto 4px; text-align: center; line-height: 1.5; }
+.cambara-lightbox__counter { display: block; margin-top: 8px; color: #d7c3b1; text-align: center; font-size: .85rem; }
+.cambara-lightbox__control {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255,255,255,.5);
+  border-radius: 50%;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  font-size: 1.15rem;
+  cursor: pointer;
+}
+.cambara-lightbox__close { right: 13px; top: 10px; }
+.cambara-lightbox__prev, .cambara-lightbox__next { top: 44%; }
+.cambara-lightbox__prev { left: 10px; }
+.cambara-lightbox__next { right: 10px; }
+@media (max-width: 600px) {
+  .cambara-gallery-arrow { width: 36px; height: 36px; }
+  .cambara-gallery-arrow--prev { left: 3px; }
+  .cambara-gallery-arrow--next { right: 3px; }
+  .cambara-lightbox { width: 100vw; max-height: 100dvh; padding: 58px 42px 24px; border-radius: 0; }
+  .cambara-lightbox__image { max-height: calc(100dvh - 205px); }
+  .cambara-lightbox__control { width: 34px; height: 34px; }
+  .cambara-lightbox__prev { left: 3px; }
+  .cambara-lightbox__next { right: 3px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-gallery .gallery-strip { scroll-behavior: auto; }
+}
