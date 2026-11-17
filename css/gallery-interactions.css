@@ -1,4 +1,5 @@
 /* Navegação e lightbox das fotografias institucionais — independente do CMS */
+.cambara-gallery-arrow[hidden], .cambara-lightbox__control[hidden] { display: none !important; }
 .about-gallery .cambara-photo-carousel { position: relative; }
 .about-gallery .gallery-strip { scroll-padding-inline: 4px; }
 .cambara-gallery-arrow {
