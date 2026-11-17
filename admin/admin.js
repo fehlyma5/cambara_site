@@ -10,6 +10,38 @@
     $("loginView").hidden = isLoggedIn;
     $("dashboardView").hidden = !isLoggedIn;
   }
+  // A interface só abre para perfis da equipe; as políticas RLS devem
+  // aplicar a mesma autorização no banco e no Storage.
+  async function hasCmsAccess() {
+    const { data: userData, error: userError } = await client.auth.getUser();
+    if (userError || !userData?.user) return false;
+    const { data: profile, error: profileError } = await client
+      .from("profiles")
+      .select("role")
+      .eq("id", userData.user.id)
+      .maybeSingle();
+    if (profileError) {
+      console.warn("Cambará CMS: não foi possível verificar o perfil.");
+      return false;
+    }
+    return profile?.role === "admin" || profile?.role === "editor";
+  }
+  async function openAuthorizedDashboard() {
+    if (!(await hasCmsAccess())) {
+      showDashboard(false);
+      setMessage("loginMessage", "Acesso restrito à equipe autorizada. Consulte o administrador.");
+      return false;
+    }
+    showDashboard(true);
+    await loadBanners();
+    await loadCategories();
+    await loadSettings();
+    await loadGallery();
+    await loadTeam();
+    await loadDashboardStats();
+    await loadCampaignReport();
+    return true;
+  }
   function escapeHtml(value = "") {
     return String(value).replace(/[&<>"']/g, char => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[char]));
   }
@@ -557,7 +589,7 @@
     }
     client = window.supabase.createClient(window.CAMBARA_SUPABASE_URL, window.CAMBARA_SUPABASE_ANON_KEY);
     const { data } = await client.auth.getSession();
-    if (data.session) { showDashboard(true); await loadBanners(); await loadCategories(); await loadSettings(); await loadGallery(); await loadTeam(); await loadDashboardStats(); await loadCampaignReport(); }
+    if (data.session) await openAuthorizedDashboard();
   }
   $("loginForm").addEventListener("submit", async event => {
     event.preventDefault();
@@ -568,15 +600,8 @@
       password: $("password").value
     });
     if (error) return setMessage("loginMessage", error.message);
-    showDashboard(true);
     setMessage("loginMessage", "");
-    await loadBanners();
-    await loadCategories();
-    await loadSettings();
-    await loadGallery();
-    await loadTeam();
-    await loadDashboardStats();
-    await loadCampaignReport();
+    await openAuthorizedDashboard();
   });
   $("logoutButton").addEventListener("click", async () => {
     await client.auth.signOut();
