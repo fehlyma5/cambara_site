@@ -49,9 +49,37 @@ window.CAMBARA_CATEGORIES_READY = (async () => {
     cloneCards.forEach(card=>track.append(card));
     grid.replaceChildren(track);
     grid.classList.add("category-marquee");
-    // Não pausar em focusin: no desktop um clique pode manter foco no card,
-    // deixando a animação congelada até outro elemento receber foco.
-    grid.classList.remove("is-paused");
+
+    // Controle explícito de movimento: também permite ativar no notebook
+    // quando o navegador solicita reduced motion.
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const section = grid.closest(".categories");
+    const heading = section?.querySelector(".section-heading");
+    const control = document.createElement("button");
+    control.type = "button";
+    control.className = "category-motion-toggle";
+    const savedChoice = localStorage.getItem("cambara-category-motion");
+    let playing = savedChoice === "on" || (savedChoice !== "off" && !reducedMotion.matches);
+    function updateMotion() {
+      grid.classList.toggle("motion-enabled", playing);
+      grid.classList.toggle("motion-disabled", !playing);
+      control.textContent = playing ? "Pausar rolagem das categorias" : "Ativar rolagem automática";
+      control.setAttribute("aria-pressed", String(playing));
+    }
+    control.addEventListener("click", () => {
+      playing = !playing;
+      localStorage.setItem("cambara-category-motion", playing ? "on" : "off");
+      updateMotion();
+    });
+    reducedMotion.addEventListener?.("change", () => {
+      if (localStorage.getItem("cambara-category-motion") === null) {
+        playing = !reducedMotion.matches;
+        updateMotion();
+      }
+    });
+    if (heading) heading.insertAdjacentElement("afterend", control);
+    else grid.insertAdjacentElement("beforebegin", control);
+    updateMotion();
   } catch(error) { console.warn("Cambará CMS: mantendo categorias locais.",error); }
 })();
 
