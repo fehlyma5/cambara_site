@@ -1244,3 +1244,13 @@ button { font: inherit; }
     animation-duration: 28s;
   }
 }
+
+/* Contatos do rodapé: endereço e e-mail legíveis também no celular */
+.footer-grid > div:not(.footer-brand) a[href^="mailto:"] {
+  overflow-wrap: anywhere;
+}
+.footer-grid > div:not(.footer-brand) p i,
+.footer-grid > div:not(.footer-brand) a[href^="mailto:"] i {
+  margin-right: 6px;
+  color: var(--gold);
+}
