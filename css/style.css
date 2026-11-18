@@ -1207,3 +1207,40 @@ button { font: inherit; }
   #galeria .testimonial-tv-screen { border-width: 4px; border-radius: 9px; }
   #galeria .testimonial-tv-brand { font-size: .5rem; }
 }
+
+
+/* Controle da rolagem das categorias: respeita preferência do sistema,
+   permitindo ativação explícita pelo visitante. */
+.category-motion-toggle {
+  display: block;
+  margin: -12px auto 22px;
+  padding: 9px 16px;
+  border: 1px solid #b97640;
+  border-radius: 999px;
+  color: #59351d;
+  background: rgba(255,255,255,.74);
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+.category-motion-toggle:hover { background: #fff; }
+.category-motion-toggle:focus-visible { outline: 3px solid #f58220; outline-offset: 3px; }
+.category-grid.category-marquee.motion-enabled { overflow-x: hidden; }
+.category-grid.category-marquee.motion-enabled .category-track {
+  animation: cambara-category-scroll 34s linear infinite;
+  animation-play-state: running;
+}
+.category-grid.category-marquee.motion-disabled {
+  overflow-x: auto;
+  touch-action: pan-x pan-y;
+}
+.category-grid.category-marquee.motion-disabled .category-track {
+  animation: none;
+  transform: none;
+}
+@media (max-width: 760px) {
+  .category-grid.category-marquee.motion-enabled .category-track {
+    animation-duration: 28s;
+  }
+}
