@@ -41,14 +41,17 @@ window.CAMBARA_CATEGORIES_READY = (async () => {
     const cloneCards=Array.from(track.children).map(card=>{
       const clone=card.cloneNode(true);
       clone.setAttribute("aria-hidden","true");
+      // O clone também é um link: remove o próprio card da ordem de tabulação.
+      clone.setAttribute("tabindex","-1");
       clone.querySelectorAll("a,button,[tabindex]").forEach(el=>el.setAttribute("tabindex","-1"));
       return clone;
     });
     cloneCards.forEach(card=>track.append(card));
     grid.replaceChildren(track);
     grid.classList.add("category-marquee");
-    grid.addEventListener("focusin",()=>grid.classList.add("is-paused"));
-    grid.addEventListener("focusout",event=>{if(!grid.contains(event.relatedTarget))grid.classList.remove("is-paused");});
+    // Não pausar em focusin: no desktop um clique pode manter foco no card,
+    // deixando a animação congelada até outro elemento receber foco.
+    grid.classList.remove("is-paused");
   } catch(error) { console.warn("Cambará CMS: mantendo categorias locais.",error); }
 })();
 
