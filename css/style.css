@@ -595,20 +595,25 @@ button { font: inherit; }
 
 .socials {
   display: flex;
-  gap: 9px;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-top: 18px;
 }
 
 .socials a {
-  width: 37px;
-  height: 37px;
+  width: 52px;
+  height: 52px;
   display: grid !important;
   place-items: center;
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 12px;
   color: #d8c9bd !important;
   margin: 0 !important;
+  font-size: 1.45rem;
+  transition: background .2s ease, color .2s ease, transform .2s ease;
 }
+.socials a:hover { transform: translateY(-2px); }
+.socials a:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 
 .socials a:hover {
   background: var(--gold);
