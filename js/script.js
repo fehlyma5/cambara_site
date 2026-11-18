@@ -21,14 +21,34 @@ document.addEventListener("DOMContentLoaded", async () => {
       : '<i class="fa-solid fa-bars"></i>';
   });
 
-  // Fecha o menu ao clicar em um link
-  document.querySelectorAll(".menu a").forEach(link => {
+  // Destaca a seção selecionada e fecha o menu no celular.
+  const navLinks = [...document.querySelectorAll('.menu a[href^="#"]')];
+  function syncActiveNav() {
+    const currentHash = location.hash || "#inicio";
+    navLinks.forEach(link => {
+      const active = link.getAttribute("href") === currentHash;
+      link.classList.toggle("is-active", active);
+      if (active) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    });
+  }
+  navLinks.forEach(link => {
     link.addEventListener("click", () => {
-      menu.classList.remove("open");
-      menuToggle.setAttribute("aria-expanded", "false");
-      menuToggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
+      navLinks.forEach(item => {
+        item.classList.remove("is-active");
+        item.removeAttribute("aria-current");
+      });
+      link.classList.add("is-active");
+      link.setAttribute("aria-current", "location");
+      menu?.classList.remove("open");
+      if (menuToggle) {
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
+      }
     });
   });
+  window.addEventListener("hashchange", syncActiveNav);
+  syncActiveNav();
 
   // Header com sombra ao rolar
   const header = document.getElementById("header");
