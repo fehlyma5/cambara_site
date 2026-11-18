@@ -123,17 +123,37 @@ button { font: inherit; }
 .menu {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 8px;
 }
 
 .menu a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 13px;
+  border-radius: 10px;
   color: #4c4038;
+  background: transparent;
   font-size: .9rem;
   font-weight: 650;
-  transition: .2s;
+  white-space: nowrap;
+  transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
 }
 
-.menu a:hover { color: var(--wood); }
+.menu a:hover,
+.menu a:focus-visible {
+  color: #59351d;
+  background: #fbe7d7;
+  box-shadow: inset 0 0 0 1px #edc7a7;
+}
+
+.menu a.is-active {
+  color: #fff;
+  background: #593b1d;
+  box-shadow: 0 4px 12px rgba(89,59,29,.18);
+}
+
+.menu a:focus-visible { outline: 2px solid #f58220; outline-offset: 2px; }
 
 .menu-toggle {
   display: none;
