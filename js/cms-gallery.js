@@ -1,4 +1,4 @@
-// Cambará CMS — separa depoimentos em vídeo das fotos institucionais.
+// Cambará CMS — exibe depoimentos em vídeo; fotos históricas ficam arquivadas no CMS.
 window.CAMBARA_GALLERY_READY = (async () => {
   try {
     if (!window.CAMBARA_SUPABASE_URL || !window.CAMBARA_SUPABASE_ANON_KEY || !window.supabase?.createClient) return;
@@ -6,10 +6,8 @@ window.CAMBARA_GALLERY_READY = (async () => {
     const { data, error } = await client.from("gallery_photos").select("title,caption,image_url,media_type,position").eq("active", true).order("position", { ascending: true });
     if (error) { console.warn("Cambará CMS: galeria não carregada.", error.message); return; }
     const videoGrid = document.getElementById("galleryGrid");
-    const photoGrid = document.getElementById("galleryPhotosGrid");
-    if (!videoGrid || !photoGrid) return;
+    if (!videoGrid) return;
     const videos = (data || []).filter(item => item.media_type === "video");
-    const photos = (data || []).filter(item => item.media_type !== "video");
     const makeCaption = item => {
       const caption = document.createElement("figcaption");
       const title = document.createElement("strong"); title.textContent = item.title || ""; caption.append(title);
@@ -31,13 +29,5 @@ window.CAMBARA_GALLERY_READY = (async () => {
     });
     videoGrid.replaceChildren(videoFragment);
     if (!videos.length) videoGrid.innerHTML = '<p class="gallery-empty">Em breve, novos depoimentos de clientes.</p>';
-    const photoFragment = document.createDocumentFragment();
-    photos.forEach(item => {
-      const figure = document.createElement("figure"); figure.className = "gallery-card";
-      const image = document.createElement("img"); image.src = item.image_url; image.alt = item.title || "Foto da Cambará"; image.loading = "lazy";
-      figure.append(image, makeCaption(item)); photoFragment.append(figure);
-    });
-    photoGrid.replaceChildren(photoFragment);
-    if (!photos.length) photoGrid.innerHTML = '<p class="gallery-empty">Em breve, fotos da Cambará.</p>';
   } catch (error) { console.warn("Cambará CMS: mantendo galerias padrão.", error); }
 })();
