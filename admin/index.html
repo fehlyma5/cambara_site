@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="admin.css?v=campaign-report-1">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
-  <script src="admin.js?v=security-access-2" defer></script>
+  <script src="admin.js?v=jeitin-1" defer></script>
 </head>
 <body>
   <main class="shell">
@@ -121,14 +121,35 @@
         </form>
       </section>
 
+      <section class="panel" id="jeitinPanel">
+        <div class="panel-heading"><div><h2>Jeitin Cambará — vídeos</h2><p class="muted">Cadastre os vídeos MP4 das dicas exibidas na seção Sobre a Cambará. A galeria antiga está arquivada abaixo.</p></div></div>
+        <button id="newJeitinButton" class="primary" type="button">+ Adicionar vídeo do Jeitin</button>
+        <div id="jeitinList" class="banner-list"><p class="muted">Carregando vídeos...</p></div>
+        <section id="jeitinFormPanel" class="content-editor" hidden>
+          <h3 id="jeitinFormTitle">Novo vídeo do Jeitin</h3>
+          <form id="jeitinForm">
+            <input type="hidden" id="jeitinId">
+            <div class="form-grid">
+              <div class="field full"><label for="jeitinTitle">Título da dica</label><input id="jeitinTitle" maxlength="120" required placeholder="Ex.: Jeitin Cambará — conserto rápido"></div>
+              <div class="field full"><label for="jeitinCaption">Descrição (opcional)</label><textarea id="jeitinCaption" maxlength="240" rows="2"></textarea></div>
+              <div class="field"><label for="jeitinPosition">Ordem de exibição</label><input id="jeitinPosition" type="number" min="1" value="1" required></div>
+              <div class="field full"><label for="jeitinFile">Arquivo MP4 (até 25 MB)</label><input id="jeitinFile" type="file" accept="video/mp4"><small>Use o arquivo original do Reel, preferencialmente vertical. Para editar texto ou ordem, não precisa reenviar o vídeo.</small></div>
+              <label class="switch-field"><input id="jeitinActive" type="checkbox" checked> Publicar no site</label>
+            </div>
+            <div class="actions"><button class="primary" type="submit">Salvar vídeo</button><button id="jeitinCancel" class="secondary" type="button">Cancelar</button></div>
+            <p id="jeitinMessage" class="message" role="status"></p>
+          </form>
+        </section>
+      </section>
+
       <section class="panel" id="galleryPanel">
         <div class="panel-heading"><div><h2>Conteúdos do site</h2><p class="muted">Escolha o tipo de conteúdo antes de publicar. Cada área aparece em um lugar diferente no site.</p></div></div>
         <div class="content-manager-grid">
           <section class="content-manager-card">
             <div class="content-manager-icon photo-icon" aria-hidden="true">▧</div>
-            <h3>Galeria institucional — fotos</h3>
-            <p>Fachada, equipe, loja, produtos, eventos e bastidores. As fotografias aparecem junto à seção “Sobre a Cambará”.</p>
-            <button id="newPhotoButton" class="primary" type="button">+ Adicionar fotografia</button>
+            <h3>Arquivo de fotografias</h3>
+            <p>Fachada, equipe, loja, produtos, eventos e bastidores. Fotografias antigas preservadas no CMS, mas não exibidas na landing page.</p>
+            <button id="newPhotoButton" class="primary" type="button" hidden>+ Adicionar fotografia</button>
             <div id="photoGalleryList" class="banner-list content-list"><p class="muted">Carregando fotografias...</p></div>
           </section>
           <section class="content-manager-card">
@@ -178,7 +199,7 @@
 
       <section class="panel" id="teamPanel">
         <div class="panel-heading"><div><h2>Equipe e acessos</h2><p class="muted">Consulte os usuários e defina quem administra ou edita o site.</p></div><button id="refreshTeamButton" class="secondary" type="button">Atualizar equipe</button></div>
-        <div class="intro"><p>Para adicionar uma pessoa, primeiro crie o usuário em Supabase → Authentication → Users → Add user. O CMS criará automaticamente o perfil como editor.</p></div>
+        <div class="intro"><p>Para adicionar uma pessoa, primeiro crie o usuário em Supabase → Authentication → Users → Add user. O administrador precisa autorizar o novo usuário no cadastro de perfis.</p></div>
         <div id="teamList" class="banner-list"><p class="muted">Carregando equipe...</p></div>
         <p id="teamMessage" class="message" role="status"></p>
       </section>
