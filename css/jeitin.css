@@ -1,0 +1,28 @@
+/* Jeitin Cambará: vídeos verticais, sem carregar mídia inteira antes do clique */
+.jeitin-heading { margin-bottom: 20px; text-align: center; }
+.jeitin-heading .eyebrow { margin-bottom: 8px; display: block; }
+.jeitin-heading h2 { color: var(--brown-900); font-size: clamp(1.6rem, 3vw, 2.25rem); }
+.jeitin-heading h2 span { color: var(--orange, #f58220); }
+.jeitin-heading p { color: var(--muted); margin-top: 8px; }
+.jeitin-carousel { position: relative; }
+.jeitin-strip { display: flex; gap: 18px; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding: 8px 4px 18px; scrollbar-width: thin; }
+.jeitin-card { flex: 0 0 clamp(200px, 24vw, 270px); min-width: 0; border-radius: 16px; overflow: hidden; background: white; border: 1px solid var(--border); box-shadow: 0 8px 28px rgba(42,25,15,.07); scroll-snap-align: start; }
+.jeitin-card__play { display: block; position: relative; width: 100%; padding: 0; border: 0; cursor: pointer; background: #160e09; aspect-ratio: 9/13; }
+.jeitin-card__play video { width: 100%; height: 100%; display:block; object-fit:cover; pointer-events:none; }
+.jeitin-card__play-icon { position: absolute; inset: 0; display: grid; place-items: center; font-size: 2.2rem; color: #fff; text-shadow: 0 2px 12px #000; }
+.jeitin-card__play-icon::first-letter { background: #ed7720; }
+.jeitin-card__text { padding: 14px 16px 18px; }
+.jeitin-card__text h3 { font-size: 1rem; color: var(--brown-900); }
+.jeitin-card__text p { margin-top: 6px; color: var(--muted); font-size: .86rem; }
+.jeitin-strip .gallery-empty { flex: 0 0 100%; }
+.jeitin-arrow { position:absolute; top:40%; z-index:3; width:44px; height:44px; border:0; border-radius:50%; color:white; background:rgba(45,25,13,.85); font-size:1.3rem; cursor:pointer; }
+.jeitin-arrow--prev { left:8px; } .jeitin-arrow--next { right:8px; }
+.jeitin-arrow[hidden] { display:none; } .jeitin-arrow:disabled { opacity:.35; }
+.jeitin-arrow:focus-visible, .jeitin-card__play:focus-visible { outline: 3px solid #f58220; outline-offset: 3px; }
+.jeitin-dialog { position:fixed; margin:auto; width:min(96vw,560px); max-height:95dvh; padding:45px 20px 20px; border:0; border-radius:18px; background:#1b100c; color:#fff; }
+.jeitin-dialog::backdrop { background:rgba(0,0,0,.85); }
+.jeitin-dialog video { display:block; width:100%; max-height:calc(95dvh - 130px); aspect-ratio:9/16; object-fit:contain; background:#080605; }
+.jeitin-dialog p { text-align:center; padding-top:10px; }
+.jeitin-dialog__close { position:absolute; top:10px; right:12px; width:34px; height:34px; border:0; border-radius:50%; background:#f58220; color:#1b100c; cursor:pointer; }
+@media(max-width:600px){ .jeitin-card { flex-basis: min(65vw,250px); } .jeitin-arrow { width:36px;height:36px; } }
+@media(prefers-reduced-motion:reduce){ .jeitin-strip { scroll-behavior:auto; } }
