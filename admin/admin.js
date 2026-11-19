@@ -714,6 +714,26 @@
     const file = event.target.files[0];
     if (file) $("imagePreview").innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Prévia da imagem selecionada">`;
   });
+  // Categorias: conectar formulário e botões ao CRUD já existente.
+  $("newCategoryButton").addEventListener("click", () => {
+    resetCategoryForm();
+    $("categoryFormPanel").hidden = false;
+    $("categoryFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+  $("categoryForm").addEventListener("submit", saveCategory);
+  $("categoryList").addEventListener("click", handleCategoryClick);
+  $("cancelCategoryButton").addEventListener("click", resetCategoryForm);
+  $("categoryImage").addEventListener("change", event => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const preview = $("categoryImagePreview");
+    const url = URL.createObjectURL(file);
+    const image = document.createElement("img");
+    image.src = url;
+    image.alt = "Prévia da categoria";
+    image.addEventListener("load", () => URL.revokeObjectURL(url), {once:true});
+    preview.replaceChildren(image);
+  });
   $("reportPeriod").addEventListener("change",loadCampaignReport);
   $("refreshTeamButton").addEventListener("click",loadTeam);
   $("teamList").addEventListener("click",handleTeamClick);
