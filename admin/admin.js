@@ -37,6 +37,7 @@
     await loadCategories();
     await loadSettings();
     await loadGallery();
+    await loadJeitin();
     await loadTeam();
     await loadDashboardStats();
     await loadCampaignReport();
@@ -362,6 +363,99 @@
     setMessage("galleryFormMessage", "");
     setGalleryMode(type);
   }
+
+  // Jeitin Cambará: gestão independente dos depoimentos e do arquivo de fotografias.
+  let currentJeitinUrl = "";
+  function resetJeitinForm() {
+    $("jeitinForm").reset();
+    $("jeitinId").value = "";
+    $("jeitinPosition").value = "1";
+    $("jeitinActive").checked = true;
+    $("jeitinFile").required = true;
+    currentJeitinUrl = "";
+    $("jeitinFormTitle").textContent = "Novo vídeo do Jeitin";
+    setMessage("jeitinMessage", "");
+  }
+  async function loadJeitin() {
+    $("jeitinList").innerHTML = '<p class="muted">Carregando vídeos...</p>';
+    const {data,error} = await client.from("jeitin_videos").select("*").order("position",{ascending:true});
+    if(error) {
+      $("jeitinList").innerHTML = '<p class="muted">Configure a tabela jeitin_videos no Supabase para habilitar esta seção.</p>';
+      console.warn("Jeitin Cambará:",error.message);
+      return;
+    }
+    $("jeitinList").innerHTML = data.length ? data.map(item => `
+      <article class="banner-item">
+        <video src="${escapeHtml(item.video_url)}" controls playsinline preload="metadata" style="width:160px;max-height:230px;background:#1b100c"></video>
+        <div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.caption||"")}</p><p>Posição: ${item.position}</p><span class="status ${item.active?"":"off"}">${item.active?"Publicado":"Oculto"}</span></div>
+        <div class="item-actions">
+          <button type="button" class="secondary" data-jeitin-edit="${item.id}">Editar</button>
+          <button type="button" class="secondary" data-jeitin-toggle="${item.id}" data-active="${item.active}">${item.active?"Ocultar":"Publicar"}</button>
+          <button type="button" class="secondary" data-jeitin-delete="${item.id}">Excluir</button>
+        </div>
+      </article>`).join("") : '<p class="muted">Nenhuma dica cadastrada ainda.</p>';
+  }
+  async function editJeitin(id) {
+    const {data,error}=await client.from("jeitin_videos").select("*").eq("id",id).single();
+    if(error) return setMessage("dashboardMessage",error.message);
+    resetJeitinForm();
+    $("jeitinId").value=data.id;
+    $("jeitinTitle").value=data.title;
+    $("jeitinCaption").value=data.caption||"";
+    $("jeitinPosition").value=data.position;
+    $("jeitinActive").checked=!!data.active;
+    currentJeitinUrl=data.video_url;
+    $("jeitinFile").required=false;
+    $("jeitinFormTitle").textContent="Editar vídeo do Jeitin";
+    $("jeitinFormPanel").hidden=false;
+    $("jeitinFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  async function saveJeitin(event) {
+    event.preventDefault();
+    setMessage("jeitinMessage","Salvando vídeo...");
+    try {
+      const file=$("jeitinFile").files[0];
+      let url=currentJeitinUrl;
+      if(file) {
+        if(file.type!=="video/mp4") throw new Error("Envie um arquivo MP4.");
+        if(file.size>25*1024*1024) throw new Error("O vídeo deve ter até 25 MB.");
+        const path="jeitin/"+crypto.randomUUID()+".mp4";
+        const {error:uploadError}=await client.storage.from("site-images").upload(path,file,{upsert:false,contentType:"video/mp4"});
+        if(uploadError) throw uploadError;
+        url=client.storage.from("site-images").getPublicUrl(path).data.publicUrl;
+      }
+      if(!url) throw new Error("Selecione um vídeo MP4.");
+      const payload={
+        title:$("jeitinTitle").value.trim(),
+        caption:$("jeitinCaption").value.trim()||null,
+        video_url:url,
+        position:Number($("jeitinPosition").value),
+        active:$("jeitinActive").checked,
+        updated_at:new Date().toISOString()
+      };
+      const id=$("jeitinId").value;
+      const {error}=await (id?client.from("jeitin_videos").update(payload).eq("id",id):client.from("jeitin_videos").insert(payload));
+      if(error) throw error;
+      resetJeitinForm();
+      $("jeitinFormPanel").hidden=true;
+      setMessage("dashboardMessage","Vídeo do Jeitin salvo com sucesso.");
+      await loadJeitin();
+    }catch(error){ setMessage("jeitinMessage",error.message||"Não foi possível salvar o vídeo."); }
+  }
+  async function handleJeitinClick(event) {
+    const button=event.target.closest("button");
+    if(!button) return;
+    if(button.dataset.jeitinEdit) return editJeitin(button.dataset.jeitinEdit);
+    if(button.dataset.jeitinToggle){
+      const {error}=await client.from("jeitin_videos").update({active:button.dataset.active!=="true",updated_at:new Date().toISOString()}).eq("id",button.dataset.jeitinToggle);
+      if(error) setMessage("dashboardMessage",error.message); else await loadJeitin();
+    }
+    if(button.dataset.jeitinDelete && confirm("Excluir este vídeo do catálogo do Jeitin?")){
+      const {error}=await client.from("jeitin_videos").delete().eq("id",button.dataset.jeitinDelete);
+      if(error) setMessage("dashboardMessage",error.message); else { setMessage("dashboardMessage","Vídeo retirado do catálogo."); await loadJeitin(); }
+    }
+  }
+
   async function loadGallery() {
     const photoList = $("photoGalleryList");
     const videoList = $("videoGalleryList");
@@ -623,6 +717,10 @@
   $("reportPeriod").addEventListener("change",loadCampaignReport);
   $("refreshTeamButton").addEventListener("click",loadTeam);
   $("teamList").addEventListener("click",handleTeamClick);
+  $("newJeitinButton").addEventListener("click",()=>{resetJeitinForm();$("jeitinFormPanel").hidden=false;$("jeitinFormPanel").scrollIntoView({behavior:"smooth",block:"start"});});
+  $("jeitinForm").addEventListener("submit",saveJeitin);
+  $("jeitinCancel").addEventListener("click",()=>{$("jeitinFormPanel").hidden=true;});
+  $("jeitinList").addEventListener("click",handleJeitinClick);
   $("galleryForm").addEventListener("submit",saveGalleryPhoto);
   $("newPhotoButton").addEventListener("click",()=>{resetGalleryForm("image");$("galleryFormPanel").scrollIntoView({behavior:"smooth",block:"start"});});
   $("newVideoButton").addEventListener("click",()=>{resetGalleryForm("video");$("galleryFormPanel").scrollIntoView({behavior:"smooth",block:"start"});});
