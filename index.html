@@ -12,7 +12,7 @@
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%23593B1D'/%3E%3Cpath d='M8 34 25 14l12 14 8-9 12 15H8Z' fill='none' stroke='%23F58220' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M19 39h27M24 46h17' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/style.css?v=footer-contact-1">
-  <link rel="stylesheet" href="css/gallery-interactions.css?v=1">
+  <link rel="stylesheet" href="css/jeitin.css?v=1">
 </head>
 <body>
 
@@ -183,12 +183,17 @@
         </div>
       </div>
       <div class="container about-gallery">
-        <div class="cambara-photo-carousel" aria-label="Galeria de fotos da Cambará">
-          <button type="button" class="cambara-gallery-arrow cambara-gallery-arrow--prev" id="cambaraGalleryPrev" aria-label="Fotos anteriores" hidden><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
-          <div class="gallery-strip" id="galleryPhotosGrid" aria-label="Fotografias institucionais">
-            <p class="gallery-empty">Em breve, fotos da Cambará.</p>
+        <div class="jeitin-heading">
+          <span class="eyebrow dark">Dicas em vídeo</span>
+          <h2>Jeitin <span>Cambará</span></h2>
+          <p>Ideias, soluções e dicas práticas para facilitar sua obra.</p>
+        </div>
+        <div class="jeitin-carousel" aria-label="Vídeos do Jeitin Cambará">
+          <button class="jeitin-arrow jeitin-arrow--prev" type="button" id="jeitinPrev" aria-label="Vídeos anteriores" hidden><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+          <div class="jeitin-strip" id="jeitinGrid">
+            <p class="gallery-empty">Em breve, dicas do Jeitin Cambará!</p>
           </div>
-          <button type="button" class="cambara-gallery-arrow cambara-gallery-arrow--next" id="cambaraGalleryNext" aria-label="Próximas fotos" hidden><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+          <button class="jeitin-arrow jeitin-arrow--next" type="button" id="jeitinNext" aria-label="Próximos vídeos" hidden><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
         </div>
       </div>
     </section>
@@ -311,14 +316,10 @@
     <span>Fale no WhatsApp</span>
   </a>
 
-  <!-- Visualização ampliada das fotografias institucionais -->
-  <dialog class="cambara-lightbox" id="cambaraPhotoLightbox" aria-label="Fotografia ampliada">
-    <button type="button" class="cambara-lightbox__control cambara-lightbox__close" id="cambaraLightboxClose" aria-label="Fechar fotografia"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
-    <button type="button" class="cambara-lightbox__control cambara-lightbox__prev" id="cambaraLightboxPrev" aria-label="Fotografia anterior"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
-    <img class="cambara-lightbox__image" id="cambaraLightboxImage" alt="">
-    <button type="button" class="cambara-lightbox__control cambara-lightbox__next" id="cambaraLightboxNext" aria-label="Próxima fotografia"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
-    <p class="cambara-lightbox__caption" id="cambaraLightboxCaption"></p>
-    <span class="cambara-lightbox__counter" id="cambaraLightboxCounter" aria-live="polite"></span>
+  <dialog id="jeitinDialog" class="jeitin-dialog" aria-label="Reprodução do Jeitin Cambará">
+    <button id="jeitinClose" class="jeitin-dialog__close" type="button" aria-label="Fechar vídeo"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    <video id="jeitinPlayer" controls playsinline preload="none"></video>
+    <p id="jeitinDialogTitle"></p>
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -326,8 +327,8 @@
   <script src="js/cms-public.js?v=banner-click-3"></script>
   <script src="js/cms-categories.js?v=category-motion-control-3"></script>
   <script src="js/cms-settings.js?v=whatsapp-fix-1"></script>
-  <script src="js/cms-gallery.js?v=photo-strip-1"></script>
-  <script src="js/gallery-interactions.js?v=1"></script>
+  <script src="js/cms-gallery.js?v=jeitin-1"></script>
+  <script src="js/cms-jeitin.js?v=1"></script>
   <script src="js/cms-analytics.js?v=banner-click-3"></script>
   <script src="js/script.js?v=nav-box-1"></script>
 </body>
